@@ -1,0 +1,20 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - commerce_product.commerce_product_type.event
+    - field.storage.commerce_product.rng_registration_type
+id: commerce_product.event.rng_registration_type
+field_name: rng_registration_type
+entity_type: commerce_product
+bundle: event
+label: 'Registration type'
+description: 'Select which registration types are valid for this event.'
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:registration_type'
+  handler_settings: {  }
+field_type: entity_reference

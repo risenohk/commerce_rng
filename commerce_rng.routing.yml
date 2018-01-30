@@ -1,0 +1,116 @@
+# Admin routes.
+commerce_rng.registrant_form.add:
+  path: '/admin/commerce/orders/{commerce_order}/registration/{registration}/add'
+  defaults:
+    _form: '\Drupal\commerce_rng\Form\RegistrantAddForm'
+    _title: 'Add registrant'
+  options:
+    parameters:
+      commerce_order:
+        type: 'entity:commerce_order'
+      registration:
+        type: 'entity:registration'
+  requirements:
+    _permission: 'administer commerce_order'
+
+commerce_rng.registrant_form.edit:
+  path: '/admin/commerce/orders/{commerce_order}/registrant/{registrant}/edit'
+  defaults:
+    _form: '\Drupal\commerce_rng\Form\RegistrantForm'
+    _title: 'Edit registrant'
+  options:
+    parameters:
+      commerce_order:
+        type: 'entity:commerce_order'
+      registrant:
+        type: 'entity:registrant'
+  requirements:
+    _permission: 'administer commerce_order'
+
+commerce_rng.registrant_form.delete:
+  path: '/admin/commerce/orders/{commerce_order}/registrant/{registrant}/delete'
+  defaults:
+    _form: '\Drupal\commerce_rng\Form\RegistrantDeleteForm'
+    _title: 'Delete registrant'
+  options:
+    parameters:
+      commerce_order:
+        type: 'entity:commerce_order'
+      registrant:
+        type: 'entity:registrant'
+  requirements:
+    _permission: 'administer commerce_order'
+
+# Customer routes.
+# Only checkout access is checked here because for the registration.update
+# access checks you need to fulfill one of the following rules:
+# - You are the owner of the event (aka creator of the product);
+# - You are one of the registrants on the registration (only the user identity
+#   type is supported);
+# - The registration is new (when it saved once it is no longer new).
+# @todo maybe merge these routes with admin routes.
+commerce_rng.customer_registrant_form.add:
+  path: '/registration/{commerce_order}/{registration}/add/{js}'
+  defaults:
+    _form: '\Drupal\commerce_rng\Form\RegistrantAddForm'
+    _title: 'Add registrant'
+  options:
+    parameters:
+      commerce_order:
+        type: 'entity:commerce_order'
+      registration:
+        type: 'entity:registration'
+  requirements:
+    _custom_access: '\Drupal\commerce_checkout\Controller\CheckoutController::checkAccess'
+    js: 'nojs|ajax'
+
+commerce_rng.customer_registrant_with_person_form.add:
+  path: '/registration/{commerce_order}/{registration}/add/{person}/{js}'
+  defaults:
+    _form: '\Drupal\commerce_rng\Form\RegistrantAddForm'
+    _title: 'Add registrant'
+  options:
+    parameters:
+      commerce_order:
+        type: 'entity:commerce_order'
+      registration:
+        type: 'entity:registration'
+      person:
+        type: 'entity'
+  requirements:
+    _custom_access: '\Drupal\commerce_checkout\Controller\CheckoutController::checkAccess'
+    js: 'nojs|ajax'
+
+commerce_rng.customer_registrant_form.edit:
+  path: '/registration/{commerce_order}/{registration}/{registrant}/edit/{js}'
+  defaults:
+    _form: '\Drupal\commerce_rng\Form\RegistrantForm'
+    _title: 'Edit registrant'
+  options:
+    parameters:
+      commerce_order:
+        type: 'entity:commerce_order'
+      registration:
+        type: 'entity:registration'
+      registrant:
+        type: 'entity:registrant'
+  requirements:
+    _custom_access: '\Drupal\commerce_checkout\Controller\CheckoutController::checkAccess'
+    js: 'nojs|ajax'
+
+commerce_rng.customer_registrant_form.delete:
+  path: '/registration/{commerce_order}/{registration}/{registrant}/delete/{js}'
+  defaults:
+    _form: '\Drupal\commerce_rng\Form\RegistrantDeleteForm'
+    _title: 'Delete registrant'
+  options:
+    parameters:
+      commerce_order:
+        type: 'entity:commerce_order'
+      registration:
+        type: 'entity:registration'
+      registrant:
+        type: 'entity:registrant'
+  requirements:
+    _custom_access: '\Drupal\commerce_checkout\Controller\CheckoutController::checkAccess'
+    js: 'nojs|ajax'

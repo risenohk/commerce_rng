@@ -1,0 +1,8 @@
+langcode: en
+status: true
+dependencies: {  }
+id: event
+label: Event
+orderItemType: event
+generateTitle: true
+traits: {  }

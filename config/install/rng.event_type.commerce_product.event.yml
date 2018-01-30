@@ -1,0 +1,31 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - commerce_product.commerce_product_type.event
+    - rng.registrant_type.registrant
+id: commerce_product.event
+entity_type: commerce_product
+bundle: event
+mirror_operation_to_event_manage: update
+custom_rules: true
+default_registrant: registrant
+people_types:
+  1:
+    entity_type: user
+    bundle: user
+    create: false
+    existing: true
+    entity_form_mode: ''
+  2:
+    entity_type: profile
+    bundle: customer
+    create: false
+    existing: false
+    entity_form_mode: default
+  3:
+    entity_type: profile
+    bundle: person
+    create: true
+    existing: true
+    entity_form_mode: default

@@ -1,0 +1,27 @@
+services:
+  # RNG.
+  commerce_rng.registration_data:
+    class: Drupal\commerce_rng\RegistrationData
+    arguments: ['@entity_type.manager', '@entity.query', '@rng.event_manager']
+  commerce_rng.registrant_form:
+    class: Drupal\commerce_rng\Form\RegistrantFormHelper
+    arguments: ['@entity_type.manager', '@rng.event_manager']
+
+  # Alter RNG routes.
+  commerce_rng.route_subscriber:
+    class: Drupal\commerce_rng\Routing\RouteSubscriber
+    tags:
+      - { name: event_subscriber }
+
+  # Breadcrumb.
+  commerce_rng.order_registrant_breadcrumb:
+    class: Drupal\commerce_rng\Breadcrumb\OrderRegistrantBreadcrumbBuilder
+    tags:
+      - { name: breadcrumb_builder, priority: 150 }
+
+  # Commerce.
+  commerce_rng.availability_checker:
+    class: Drupal\commerce_rng\EventAvailabilityChecker
+    arguments: ['@rng.event_manager']
+    tags:
+      - { name: commerce.availability_checker, priority: 0 }

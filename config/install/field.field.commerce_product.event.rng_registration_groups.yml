@@ -1,0 +1,20 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - commerce_product.commerce_product_type.event
+    - field.storage.commerce_product.rng_registration_groups
+id: commerce_product.event.rng_registration_groups
+field_name: rng_registration_groups
+entity_type: commerce_product
+bundle: event
+label: 'Registration groups'
+description: 'New registrations will be added to these groups.'
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:registration_group'
+  handler_settings: {  }
+field_type: entity_reference

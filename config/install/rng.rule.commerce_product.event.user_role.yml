@@ -1,0 +1,20 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - rng.event_type.commerce_product.event
+id: commerce_product.event.user_role
+entity_type: commerce_product
+bundle: event
+machine_name: user_role
+trigger: rng_event.register
+conditions:
+  role:
+    id: rng_user_role
+    roles: {  }
+actions:
+  registration_operations:
+    id: registration_operations
+    configuration:
+      operations:
+        create: true

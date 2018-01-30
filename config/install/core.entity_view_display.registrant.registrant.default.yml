@@ -1,0 +1,19 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.registrant.registrant.field_comments
+    - rng.registrant_type.registrant
+id: registrant.registrant.default
+targetEntityType: registrant
+bundle: registrant
+mode: default
+content:
+  field_comments:
+    weight: 0
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: basic_string
+    region: content
+hidden: {  }

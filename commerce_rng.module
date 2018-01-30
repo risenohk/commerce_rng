@@ -1,0 +1,191 @@
+<?php
+
+/**
+ * @file
+ * An implementation of integration between RNG and Commerce.
+ */
+
+use Drupal\commerce_order\Entity\OrderItemInterface;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Link;
+use Drupal\Core\Url;
+use Drupal\rng\RegistrantInterface;
+
+// ---------------------------------------------------------------------------
+// ENTITY HOOKS
+// ---------------------------------------------------------------------------
+
+/**
+ * Implements hook_ENTITY_TYPE_presave() for entity type 'commerce_order_item'.
+ */
+function commerce_rng_commerce_order_item_presave(OrderItemInterface $order_item) {
+  // Update the order item's quantity.
+  \Drupal::service('commerce_rng.registration_data')->orderItemUpdateQuantity($order_item);
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_insert() for entity type 'registrant'.
+ */
+function commerce_rng_registrant_insert(RegistrantInterface $registrant) {
+  $registration = $registrant->getRegistration();
+  if (!$registration) {
+    return;
+  }
+
+  $order_item = \Drupal::service('commerce_rng.registration_data')->registrationGetOrderItem($registration);
+  if (!$order_item) {
+    return;
+  }
+
+  // Update the order item.
+  $order_item->save();
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_update() for entity type 'registrant'.
+ */
+function commerce_rng_registrant_update(RegistrantInterface $registrant) {
+  // Do the same as when inserting a registrant.
+  commerce_rng_registrant_insert($registrant);
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_delete() for entity type 'registrant'.
+ */
+function commerce_rng_registrant_delete(RegistrantInterface $registrant) {
+  // Do the same as when inserting a registrant.
+  commerce_rng_registrant_insert($registrant);
+}
+
+// ---------------------------------------------------------------------------
+// FORM ALTERS
+// ---------------------------------------------------------------------------
+
+/**
+ * Implements hook_form_FORM_ID_alter() for form 'views_form_commerce_cart_form_default'.
+ *
+ * Disables quantity field for event products.
+ */
+function commerce_rng_form_views_form_commerce_cart_form_default_alter(&$form, FormStateInterface $form_state) {
+  /** @var \Drupal\commerce_rng\RegistrationDataInterface */
+  $registration_data = \Drupal::service('commerce_rng.registration_data');
+
+  $result = $form_state->getBuildInfo()['args'][0]->result;
+  /** @var \Drupal\views\ResultRow */
+  foreach ($result as $index => $row) {
+    if (isset($row->_relationship_entities['order_items']) && $row->_relationship_entities['order_items'] instanceof OrderItemInterface) {
+      /** @var \Drupal\commerce_product\Entity\ProductInterface|null */
+      $product = $registration_data->orderItemGetEvent($row->_relationship_entities['order_items']);
+      if ($product) {
+        $form['edit_quantity'][$index]['#type'] = 'item';
+        $form['edit_quantity'][$index]['#markup'] = $form['edit_quantity'][$index]['#default_value'];
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter() for form 'commerce_order_event_edit_form'.
+ *
+ * @todo update
+ */
+function commerce_rng_form_commerce_order_event_edit_form_alter(array &$form, FormStateInterface $form_state) {
+  /* @var Order $order */
+  $order = \Drupal::routeMatch()->getParameter('commerce_order');
+
+  /* @var \Drupal\commerce_rng\RegistrationData $order_services */
+  $order_services = \Drupal::service('commerce_rng.registration_data');
+
+  // set up the registration output
+  $registrations = $order_services->getOrderRegistrations($order);
+  $buffer = [];
+
+  foreach ($registrations as $registration) {
+    $product_variation_id = $registration['product_variation_id'];
+    $product_variation_title = $registration['product_variation_title'];
+    if (!isset($buffer[$product_variation_id])) {
+      $form['registrations-wrapper'][$product_variation_id] = [
+        '#type' => 'container',
+        '#attributes' => ['class' => ['product-variation']],
+      ];
+
+      $buffer[$product_variation_id] = [
+        '#prefix' => '<div class="product-variation">',
+        '#suffix' => '</div>',
+      ];
+
+      $buffer[$product_variation_id]['title'] = [
+        '#markup' => '<h4 class="label">' . $product_variation_title . '</h4>',
+      ];
+
+      $create_link = Link::fromTextAndUrl('add registrant',
+        Url::fromRoute('commerce_rng.registrant_form.add', [
+          'commerce_order' => $order->id(),
+          'registration' => $registration['registration_id'],
+        ]))->toString();
+      $buffer[$product_variation_id]['add_link'] = [
+        '#markup' => $create_link,
+        '#prefix' => '<div class="clearfix">',
+        '#suffix' => '</div>',
+      ];
+    }
+
+    $edit_link = Link::fromTextAndUrl('edit',
+      Url::fromRoute('commerce_rng.registrant_form.edit', [
+        'commerce_order'      => $order->id(),
+        'registrant'          => $registration['registrant_id']
+      ]))->toString();
+
+    $delete_link = Link::fromTextAndUrl('delete',
+      Url::fromRoute('commerce_rng.registrant_form.delete', [
+        'commerce_order'      => $order->id(),
+        'registrant'          => $registration['registrant_id']
+      ]))->toString();
+
+    $buffer[$product_variation_id]['registrants'][] = [
+      '#type' => 'item',
+      '#markup' => t('@label (@edit | @delete)', [
+        '@label' => $registration['registrant_label'],
+        '@edit' => $edit_link,
+        '@delete' => $delete_link,
+      ]),
+    ];
+
+  }
+
+  if (!empty($buffer)) {
+    $form['registrations-wrapper'] = [
+      '#type' => 'details',
+      '#title' => t('Registration Details'),
+      '#group' => 'advanced',
+      '#open' => TRUE,
+      '#attributes' => [
+        'class' => ['order-form-registrations'],
+      ],
+      '#weight' => 93,
+    ];
+
+    $form['registrations-wrapper']['registrations'] = $buffer;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// THEMING
+// ---------------------------------------------------------------------------
+
+/**
+ * Implements hook_preprocess_THEME_HOOK() for theme hook 'commerce_checkout_order_summary'.
+ *
+ * Adds registrants info order item extra data.
+ */
+function commerce_rng_preprocess_commerce_checkout_order_summary(&$variables) {
+  if ($variables['checkout_step'] == 'review') {
+    // Don't add registrants information on review step.
+    return;
+  }
+
+  /** @var \Drupal\commerce_rng\RegistrationDataInterface */
+  $registration_data = \Drupal::service('commerce_rng.registration_data');
+
+  $variables['order_item_extra'] = $registration_data->buildRegistrantLists($variables['order_entity']);
+}

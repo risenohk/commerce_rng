@@ -1,0 +1,20 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - commerce_order
+    - entity_reference_revisions
+    - profile
+id: commerce_order.field_person
+field_name: field_person
+entity_type: commerce_order
+type: entity_reference_revisions
+settings:
+  target_type: profile
+module: entity_reference_revisions
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

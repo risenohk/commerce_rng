@@ -1,0 +1,8 @@
+langcode: en
+status: true
+dependencies: {  }
+id: rng_registration_commerce_product
+label: 'Event (Product): Registration'
+tokens:
+  - commerce_product
+  - registration

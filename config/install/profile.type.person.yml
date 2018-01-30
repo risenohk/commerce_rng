@@ -1,0 +1,12 @@
+langcode: en
+status: true
+dependencies: {  }
+id: person
+label: Person
+registration: false
+multiple: true
+roles:
+  authenticated: '0'
+weight: 0
+use_revisions: true
+description: ''

@@ -1,0 +1,8 @@
+langcode: en
+status: true
+dependencies: {  }
+label: Event
+id: event
+purchasableEntityType: commerce_product_variation
+orderType: event
+traits: {  }

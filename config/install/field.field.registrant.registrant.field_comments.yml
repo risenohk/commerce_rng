@@ -1,0 +1,18 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.registrant.field_comments
+    - rng.registrant_type.registrant
+id: registrant.registrant.field_comments
+field_name: field_comments
+entity_type: registrant
+bundle: registrant
+label: Comments
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string_long

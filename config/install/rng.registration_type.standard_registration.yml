@@ -1,0 +1,6 @@
+langcode: en
+status: true
+dependencies: {  }
+label: 'Standard registration'
+id: standard_registration
+description: ''

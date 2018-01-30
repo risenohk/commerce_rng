@@ -1,0 +1,98 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - commerce_product.commerce_product_type.event
+    - core.entity_form_mode.commerce_product.rng_event
+    - field.field.commerce_product.event.body
+    - field.field.commerce_product.event.rng_capacity
+    - field.field.commerce_product.event.rng_registrants_duplicate
+    - field.field.commerce_product.event.rng_registrants_maximum
+    - field.field.commerce_product.event.rng_registrants_minimum
+    - field.field.commerce_product.event.rng_registration_groups
+    - field.field.commerce_product.event.rng_registration_type
+    - field.field.commerce_product.event.rng_reply_to
+    - field.field.commerce_product.event.rng_status
+    - field.field.commerce_product.event.stores
+    - field.field.commerce_product.event.variations
+  module:
+    - rng
+    - unlimited_number
+id: commerce_product.event.rng_event
+targetEntityType: commerce_product
+bundle: event
+mode: rng_event
+content:
+  rng_capacity:
+    type: unlimited_number
+    weight: 2
+    settings:
+      value_unlimited: 0
+      label_unlimited: Unlimited
+      label_number: Limited
+      placeholder: ''
+    third_party_settings: {  }
+    region: content
+  rng_registrants_duplicate:
+    type: boolean_checkbox
+    weight: 1
+    settings:
+      display_label: true
+    third_party_settings: {  }
+    region: content
+  rng_registrants_maximum:
+    type: unlimited_number
+    settings:
+      value_unlimited: -1
+      label_unlimited: 'No maximum'
+      label_number: Maximum
+      placeholder: ''
+    weight: 7
+    third_party_settings: {  }
+    region: content
+  rng_registrants_minimum:
+    type: unlimited_number
+    settings:
+      value_unlimited: 0
+      label_unlimited: 'No registrants required'
+      label_number: Minimum
+      placeholder: ''
+    weight: 6
+    third_party_settings: {  }
+    region: content
+  rng_registration_groups:
+    type: rng_registration_group
+    weight: 5
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+  rng_registration_type:
+    type: rng_registration_type
+    weight: 4
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+  rng_reply_to:
+    type: email_default
+    settings:
+      placeholder: 'Leave empty to use site default.'
+      size: 60
+    weight: 3
+    third_party_settings: {  }
+    region: content
+  rng_status:
+    type: boolean_checkbox
+    weight: 0
+    settings:
+      display_label: true
+    third_party_settings: {  }
+    region: content
+hidden:
+  body: true
+  created: true
+  path: true
+  status: true
+  stores: true
+  title: true
+  uid: true
+  variations: true

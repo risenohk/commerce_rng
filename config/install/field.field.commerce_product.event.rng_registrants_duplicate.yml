@@ -1,0 +1,20 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - commerce_product.commerce_product_type.event
+    - field.storage.commerce_product.rng_registrants_duplicate
+id: commerce_product.event.rng_registrants_duplicate
+field_name: rng_registrants_duplicate
+entity_type: commerce_product
+bundle: event
+label: 'Allow duplicate registrants'
+description: 'Allows a registrant to create more than one registration for this event.'
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  on_label: 'Allow duplicate registrants for this event'
+  off_label: 'Do not allow duplicate registrants for this event'
+field_type: boolean

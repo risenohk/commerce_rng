@@ -1,0 +1,39 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - commerce_rng
+id: event
+label: Event
+plugin: multistep_event
+configuration:
+  display_checkout_progress: true
+  panes:
+    login:
+      allow_guest_checkout: true
+      allow_registration: false
+      step: login
+      weight: 0
+    registrant_information:
+      step: event_registration
+      weight: 1
+    contact_information:
+      double_entry: false
+      step: order_information
+      weight: 2
+    review:
+      step: review
+      weight: 4
+    completion_message:
+      step: complete
+      weight: 6
+    order_summary:
+      view: ''
+      step: _sidebar
+      weight: 8
+    commerce_rng_registrant_information:
+      step: _disabled
+      weight: 16
+    registration:
+      step: complete
+      weight: 7

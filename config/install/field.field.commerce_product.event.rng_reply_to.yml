@@ -1,0 +1,18 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - commerce_product.commerce_product_type.event
+    - field.storage.commerce_product.rng_reply_to
+id: commerce_product.event.rng_reply_to
+field_name: rng_reply_to
+entity_type: commerce_product
+bundle: event
+label: 'Reply-to e-mail address'
+description: 'E-mail address that appears as reply-to when emails are sent from this event. Leave empty to use site default.'
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: email
