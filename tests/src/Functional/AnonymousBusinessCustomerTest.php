@@ -65,10 +65,9 @@ class AnonymousBusinessCustomerTest extends CommerceRngBrowserTestBase {
     $this->assertSession()->pageTextContains('Contact information');
     $this->assertSession()->pageTextContains('Billing information');
     $this->assertSession()->pageTextContains('Order Summary');
-//    $this->assertSession()->pageTextContains('Person 1');
-//    $this->assertSession()->pageTextContains('Person 2');
-//    $this->assertSession()->pageTextContains('Person 3');
-
+    // $this->assertSession()->pageTextContains('Person 1');
+    // $this->assertSession()->pageTextContains('Person 2');
+    // $this->assertSession()->pageTextContains('Person 3');
     // Finalize order.
     $this->submitForm([], 'Pay and complete purchase');
     $this->assertSession()->pageTextContains('Your order number is 1. You can view your order on your account page when logged in.');

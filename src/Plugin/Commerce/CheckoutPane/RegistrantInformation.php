@@ -4,13 +4,9 @@ namespace Drupal\commerce_rng\Plugin\Commerce\CheckoutPane;
 
 use Drupal\commerce_checkout\Plugin\Commerce\CheckoutFlow\CheckoutFlowInterface;
 use Drupal\commerce_checkout\Plugin\Commerce\CheckoutPane\CheckoutPaneBase;
-use Drupal\commerce_order\Entity\OrderItem;
 use Drupal\commerce_order\Entity\OrderItemInterface;
 use Drupal\commerce_product\Entity\ProductVariationInterface;
 use Drupal\Component\Serialization\Json;
-use Drupal\Core\Ajax\AjaxResponse;
-use Drupal\Core\Ajax;
-use Drupal\Core\Ajax\OpenModalDialogCommand;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Extension\ModuleHandler;
@@ -95,17 +91,17 @@ class RegistrantInformation extends CheckoutPaneBase implements IsPaneCompleteIn
    *   The parent checkout flow.
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   The entity type manager.
-   * @param \Drupal\Core\Extension\ModuleHandler
+   * @param \Drupal\Core\Extension\ModuleHandler $module_handler
    *   The module handler.
-   * @param \Drupal\Core\Routing\RedirectDestinationInterface
+   * @param \Drupal\Core\Routing\RedirectDestinationInterface $destination
    *   The redirect destination service.
-   * @param \Drupal\rng\EventManagerInterface
+   * @param \Drupal\rng\EventManagerInterface $event_manager
    *   The RNG event manager.
-   * @param \Drupal\rng\RegistrantFactoryInterface
+   * @param \Drupal\rng\RegistrantFactoryInterface $registrant_factory
    *   The factory for creating a registrant entities.
-   * @param \Drupal\commerce_rng\Form\RegistrantFormHelperInterface
+   * @param \Drupal\commerce_rng\Form\RegistrantFormHelperInterface $registrant_form_helper
    *   Helper class for generating registrant forms.
-   * @param \Drupal\commerce_rng\RegistrationDataInterface
+   * @param \Drupal\commerce_rng\RegistrationDataInterface $registration_data
    *   Object for working with registration data.
    */
   public function __construct(
@@ -178,19 +174,21 @@ class RegistrantInformation extends CheckoutPaneBase implements IsPaneCompleteIn
       $order_item_id = $order_item->id();
 
       // Check for an existing registration on the order item.
-      /** @var \Drupal\rng\Entity\Registration|null */
+      /** @var \Drupal\rng\Entity\Registration|null $registration */
       $registration = $this->registrationData->getRegistrationByOrderItemId($order_item_id);
       if (!$registration) {
-        // A certain event item does not contain a registration yet. Information is not complete.
+        // A certain event item does not contain a registration yet. Information
+        // is not complete.
         return FALSE;
       }
 
-      /** @var \Drupal\rng\EventMetaInterface */
+      /** @var \Drupal\rng\EventMetaInterface $meta */
       $meta = $this->eventManager->getMeta($product);
 
       // Count registrants. Check if there are enough registrants.
       if (count($registration->getRegistrantIds()) < $meta->getRegistrantsMinimum()) {
-        // There exists a registration with zero registrants. Information is not complete.
+        // There exists a registration with zero registrants. Information is not
+        // complete.
         return FALSE;
       }
     }
@@ -202,7 +200,7 @@ class RegistrantInformation extends CheckoutPaneBase implements IsPaneCompleteIn
   /**
    * Returns the order item's product if the product is a RNG event.
    *
-   * @param \Drupal\commerce_order\Entity\OrderItemInterface
+   * @param \Drupal\commerce_order\Entity\OrderItemInterface $order_item
    *   The order item to check for.
    *
    * @return \Drupal\commerce_product\Entity\ProductInterface|null
@@ -264,7 +262,7 @@ class RegistrantInformation extends CheckoutPaneBase implements IsPaneCompleteIn
   /**
    * Creates a registration for the given order item.
    *
-   * @param \Drupal\Core\Entity\EntityInterface
+   * @param \Drupal\Core\Entity\EntityInterface $event
    *   The event to create a registration entity for.
    *
    * @return \Drupal\rng\RegistrationInterface
@@ -275,7 +273,7 @@ class RegistrantInformation extends CheckoutPaneBase implements IsPaneCompleteIn
   protected function createRegistration(EntityInterface $event) {
     $registration_types = $this->eventManager->getMeta($event)->getRegistrationTypes();
     if (count($registration_types) > 1) {
-      throw new \Exception('Multiple registration types not supported by Commerce RNG.');
+      throw new \Exception('Multiple registration types not supported by UKKB Study.');
     }
     if (count($registration_types) === 0) {
       throw new \Exception('No registration types found.');
@@ -352,7 +350,7 @@ class RegistrantInformation extends CheckoutPaneBase implements IsPaneCompleteIn
       $order_item_id = $order_item->id();
 
       // Check for an existing registration on the order item.
-      /** @var \Drupal\rng\Entity\Registration|null */
+      /** @var \Drupal\rng\Entity\Registration|null $registration */
       $registration = $this->registrationData->getRegistrationByOrderItemId($order_item_id);
       if (!$registration) {
         // Create a new registration.
@@ -380,7 +378,7 @@ class RegistrantInformation extends CheckoutPaneBase implements IsPaneCompleteIn
    * @param \Drupal\rng\RegistrationInterface $registration
    *   A registration entity.
    *
-   * @return []
+   * @return array
    *   A form for creating or editing a registrant.
    */
   protected function buildRegistrationForm(array &$form, FormStateInterface $form_state, RegistrationInterface $registration) {
@@ -447,10 +445,14 @@ class RegistrantInformation extends CheckoutPaneBase implements IsPaneCompleteIn
   /**
    * Builds a table of registrants.
    *
-   * @param \Drupal\rng\Entity\Registrant[]
+   * @param array $element
+   *   The form element to add the registrants table to.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The current state of the form.
+   * @param \Drupal\rng\Entity\Registrant[] $registrants
    *   The registrants to display in the table.
    *
-   * @return []
+   * @return array
    *   The form element.
    */
   protected function buildRegistrantTable(array $element, FormStateInterface $form_state, array $registrants) {
@@ -569,15 +571,16 @@ class RegistrantInformation extends CheckoutPaneBase implements IsPaneCompleteIn
       $order_item_id = $order_item->id();
 
       // Check for enough registrants on the order item.
-      /** @var \Drupal\rng\Entity\Registration|null */
+      /** @var \Drupal\rng\Entity\Registration|null $registration */
       $registration = $this->registrationData->getRegistrationByOrderItemId($order_item_id);
-      /** @var \Drupal\rng\EventMetaInterface */
+      /** @var \Drupal\rng\EventMetaInterface $meta */
       $meta = $this->eventManager->getMeta($product);
       $minimum = $meta->getRegistrantsMinimum();
       $maximum = $meta->getRegistrantsMaximum();
 
       if (!$registration || count($registration->getRegistrantIds()) < $minimum) {
-        // A certain event item does not contain a registration yet or has zero registrants.
+        // A certain event item does not contain a registration yet or has zero
+        // registrants.
         $form_state->setError($pane_form, $this->formatPlural($minimum, 'There are not enough registrants for %title. There must be at least 1 registrant.', 'There are not enough registrants for %title. There must be at least @minimum registrants.', [
           '%title' => $order_item->getTitle(),
           '@minimum' => $minimum,

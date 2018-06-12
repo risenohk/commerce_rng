@@ -24,7 +24,7 @@ class EventAvailabilityChecker implements AvailabilityCheckerInterface {
   /**
    * Constructs a new StockAvailabilityChecker object.
    *
-   * @param \Drupal\rng\EventManagerInterface
+   * @param \Drupal\rng\EventManagerInterface $event_manager
    *   The event manager.
    */
   public function __construct(EventManagerInterface $event_manager) {
@@ -43,7 +43,7 @@ class EventAvailabilityChecker implements AvailabilityCheckerInterface {
    * {@inheritdoc}
    */
   public function check(PurchasableEntityInterface $entity, $quantity, Context $context) {
-    /** @var \Drupal\rng\EventMetaInterface|null */
+    /** @var \Drupal\rng\EventMetaInterface|null $meta */
     $meta = $this->eventManager->getMeta($entity->getProduct());
     if (!$meta) {
       // No metadata available.

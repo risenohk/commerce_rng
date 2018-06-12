@@ -4,7 +4,6 @@ namespace Drupal\commerce_rng\Form;
 
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\CloseModalDialogCommand;
-use Drupal\Core\Ajax\OpenModalDialogCommand;
 use Drupal\Core\Ajax\ReplaceCommand;
 use Drupal\Core\Form\FormStateInterface;
 
@@ -16,12 +15,12 @@ trait AjaxButtonsTrait {
   /**
    * Returns a "save" button.
    *
-   * @param [] $form
+   * @param array $form
    *   The form that was ajaxified.
-   * @param \Drupal\Core\Form\FormInterface $form_state
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
    *   The state of the form.
    *
-   * @return []
+   * @return array
    *   Renderable form array.
    */
   protected function saveButton(array &$form, FormStateInterface $form_state) {
@@ -59,9 +58,9 @@ trait AjaxButtonsTrait {
   /**
    * Ajax callback that saves the form values and closes the current dialog.
    *
-   * @param [] $form
+   * @param array $form
    *   The form that was ajaxified.
-   * @param \Drupal\Core\Form\FormInterface $form_state
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
    *   The state of the form.
    *
    * @return \Drupal\Core\Ajax\AjaxResponse
@@ -84,12 +83,12 @@ trait AjaxButtonsTrait {
   /**
    * Returns a cancel button.
    *
-   * @param [] $form
+   * @param array $form
    *   The form that was ajaxified.
-   * @param \Drupal\Core\Form\FormInterface $form_state
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
    *   The state of the form.
    *
-   * @return []
+   * @return array
    *   Renderable form array.
    */
   protected function cancelButton(array &$form, FormStateInterface $form_state) {
@@ -119,9 +118,9 @@ trait AjaxButtonsTrait {
   /**
    * Form submit handler that reacts on the cancel button being clicked.
    *
-   * @param [] $form
+   * @param array $form
    *   The form that was ajaxified.
-   * @param \Drupal\Core\Form\FormInterface $form_state
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
    *   The state of the form.
    */
   public function submitCancel(array &$form, FormStateInterface $form_state) {
@@ -131,9 +130,9 @@ trait AjaxButtonsTrait {
   /**
    * Ajax callback that closes the current dialog.
    *
-   * @param [] $form
+   * @param array $form
    *   The form that was ajaxified.
-   * @param \Drupal\Core\Form\FormInterface $form_state
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
    *   The state of the form.
    *
    * @return \Drupal\Core\Ajax\AjaxResponse

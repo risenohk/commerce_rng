@@ -1,7 +1,5 @@
 <?php
 
-// @todo update
-
 namespace Drupal\commerce_rng\Form;
 
 use Drupal\commerce_product\Entity\ProductVariationType;
@@ -12,11 +10,13 @@ use Drupal\Core\Routing\RedirectDestinationInterface;
 use Drupal\Core\Action\ActionManager;
 use Drupal\Core\Condition\ConditionManager;
 use Drupal\Core\Form\FormBase;
-use Drupal\Core\Cache\Cache;
 use Drupal\rng\EventManagerInterface;
-use Drupal\rng\RNGConditionInterface;
-use Drupal\rng\Entity\RuleComponent;
 
+/**
+ * Form for configuring Commerce RNG integration.
+ *
+ * @todo update
+ */
 class EventCommerceForm extends FormBase {
 
   /**
@@ -99,17 +99,17 @@ class EventCommerceForm extends FormBase {
     $event = clone $rng_event;
     $this->event = $event;
 
-    // :TODO: this is crude, find a better way
+    // :TODO: this is crude, find a better way.
     $event_type_id = $event->getEntityTypeId() . '.' . $event->getType();
 
-    $form['event_type_id'] = array(
+    $form['event_type_id'] = [
       '#type' => 'hidden',
       '#value' => $event_type_id,
-    );
+    ];
 
     $config = \Drupal::getContainer()->get('config.factory')->getEditable('commerce_rng.settings');
     $default_values = unserialize($config->get($event_type_id));
-    if($config->get($event_type_id . ':integrate')) {
+    if ($config->get($event_type_id . ':integrate')) {
       $header = [
         'product_variation_type' => t('Product Variation Type'),
         'registration_type' => t('Registration Type'),
@@ -121,26 +121,26 @@ class EventCommerceForm extends FormBase {
         '#header' => $header,
       ];
 
-      // load the registration types for this event
+      // Load the registration types for this event.
       $options_registration_types = [0 => 'None'];
       $registration_types = $event->get('rng_registration_type')->referencedEntities();
-      foreach($registration_types as $registration_type) {
+      foreach ($registration_types as $registration_type) {
         $options_registration_types[$registration_type->id()] = $registration_type->label();
       }
 
-      // load the registration_groups for this event
-      // :TODO: this is garbage, filter it at the query level
+      // Load the registration_groups for this event
+      // :TODO: this is garbage, filter it at the query level.
       $options_registration_groups = [];
       $registration_groups = Group::loadMultiple();
-      foreach($registration_groups as $registration_group) {
-        if($event->id() == $registration_group->getEvent()->id()) {
+      foreach ($registration_groups as $registration_group) {
+        if ($event->id() == $registration_group->getEvent()->id()) {
           $options_registration_groups[$registration_group->id()] = $registration_group->label();
         }
       }
 
-      // build the table with options
+      // Build the table with options.
       $product_variation_types = ProductVariationType::loadMultiple();
-      foreach($product_variation_types as $product_variation_type) {
+      foreach ($product_variation_types as $product_variation_type) {
         $id = $product_variation_type->id();
 
         $form['table'][$id]['product_variation_type'] = ['#plain_text' => $product_variation_type->label()];
@@ -154,20 +154,19 @@ class EventCommerceForm extends FormBase {
         $form['table'][$id]['registration_groups'] = [
           '#type' => 'checkboxes',
           '#options' => $options_registration_groups,
-          '#default_value' => isset($default_values[$id]) ? $default_values[$id]['registration_groups'] : array(),
+          '#default_value' => isset($default_values[$id]) ? $default_values[$id]['registration_groups'] : [],
         ];
       }
 
-      $form['actions'] = array('#type' => 'actions');
-      $form['actions']['submit'] = array(
+      $form['actions'] = ['#type' => 'actions'];
+      $form['actions']['submit'] = [
         '#type' => 'submit',
         '#value' => t('Save changes'),
-      );
-
+      ];
 
     }
     else {
-      // put a link in there
+      // Put a link in there.
       $form['notice'] = ['#markup' => t('This event type has not been configured to allow commerce integration.')];
     }
 
@@ -184,4 +183,5 @@ class EventCommerceForm extends FormBase {
     $config = \Drupal::getContainer()->get('config.factory')->getEditable('commerce_rng.settings');
     $config->set($event_type_id, $values)->save();
   }
+
 }

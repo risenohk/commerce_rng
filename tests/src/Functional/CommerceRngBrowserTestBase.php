@@ -2,7 +2,6 @@
 
 namespace Drupal\Tests\commerce_rng\Functional;
 
-use Drupal\Component\Render\FormattableMarkup;
 use Drupal\Tests\commerce\Functional\CommerceBrowserTestBase;
 
 /**
@@ -11,7 +10,7 @@ use Drupal\Tests\commerce\Functional\CommerceBrowserTestBase;
 abstract class CommerceRngBrowserTestBase extends CommerceBrowserTestBase {
 
   /**
-   * Modules to enable.
+   * {@inheritdoc}
    */
   public static $modules = [
     'commerce_rng',

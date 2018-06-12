@@ -13,9 +13,9 @@ interface AjaxFormInterface extends FormInterface {
   /**
    * Ajax callback that saves the form values and closes the current dialog.
    *
-   * @param [] $form
+   * @param array $form
    *   The form that was ajaxified.
-   * @param \Drupal\Core\Form\FormInterface $form_state
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
    *   The state of the form.
    *
    * @return \Drupal\Core\Ajax\AjaxResponse
@@ -26,9 +26,9 @@ interface AjaxFormInterface extends FormInterface {
   /**
    * Form submit handler that reacts on the cancel button being clicked.
    *
-   * @param [] $form
+   * @param array $form
    *   The form that was ajaxified.
-   * @param \Drupal\Core\Form\FormInterface $form_state
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
    *   The state of the form.
    */
   public function submitCancel(array &$form, FormStateInterface $form_state);
@@ -36,9 +36,9 @@ interface AjaxFormInterface extends FormInterface {
   /**
    * Ajax callback that closes the current dialog.
    *
-   * @param [] $form
+   * @param array $form
    *   The form that was ajaxified.
-   * @param \Drupal\Core\Form\FormInterface $form_state
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
    *   The state of the form.
    *
    * @return \Drupal\Core\Ajax\AjaxResponse

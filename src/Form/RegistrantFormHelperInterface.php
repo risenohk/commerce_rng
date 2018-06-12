@@ -21,7 +21,7 @@ interface RegistrantFormHelperInterface {
    * @param \Drupal\rng\RegistrantInterface $registrant
    *   The registrant to build the form for.
    *
-   * @return []
+   * @return array
    *   A form for creating or editing a registrant.
    */
   public function buildRegistrantForm(array $form, FormStateInterface $form_state, RegistrantInterface $registrant);
@@ -49,7 +49,7 @@ interface RegistrantFormHelperInterface {
    * @param \Drupal\rng\RegistrantInterface $registrant
    *   The registrant to build the form for.
    *
-   * @return []
+   * @return array
    *   A form for creating or editing a person.
    */
   public function buildPersonFormByRegistrant(array $form, FormStateInterface $form_state, RegistrantInterface $registrant);
@@ -66,7 +66,7 @@ interface RegistrantFormHelperInterface {
    * @param \Drupal\Core\Entity\EntityInterface $person
    *   The person attending the event.
    *
-   * @return []
+   * @return array
    *   A form for creating or editing a person.
    */
   public function buildPersonForm(array $form, FormStateInterface $form_state, EntityInterface $event, EntityInterface $person);

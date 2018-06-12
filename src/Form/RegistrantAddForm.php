@@ -9,7 +9,6 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Url;
 use Drupal\rng\RegistrantFactoryInterface;
-use Drupal\commerce_rng\Form\RegistrantFormHelperInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -20,16 +19,22 @@ class RegistrantAddForm extends FormBase implements AjaxFormInterface, Registran
   use AjaxButtonsTrait;
 
   /**
+   * The entity type manager.
+   *
    * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
   protected $entityTypeManager;
 
   /**
+   * The entity type bundle service.
+   *
    * @var \Drupal\Core\Entity\EntityTypeBundleInfoInterface
    */
   protected $entityTypeBundleInfo;
 
   /**
+   * The route matcher, used to retrieve parameters from the route.
+   *
    * @var \Drupal\Core\Routing\RouteMatchInterface
    */
   protected $routeMatch;
@@ -49,22 +54,39 @@ class RegistrantAddForm extends FormBase implements AjaxFormInterface, Registran
   protected $registrantFormHelper;
 
   /**
+   * The order to which the registration belongs.
+   *
    * @var \Drupal\commerce_order\Entity\OrderInterface
    */
   protected $order;
 
   /**
+   * The registration to add the registrant to.
+   *
    * @var \Drupal\rng\RegistrationInterface
    */
   protected $registration;
 
   /**
+   * The regristrant to add.
+   *
    * @var \Drupal\rng\RegistrantInterface
    */
   protected $registrant;
 
   /**
-   * Constructs a new RegistrantForm.
+   * Constructs a new RegistrantAddForm.
+   *
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
+   *   The entity type manager.
+   * @param \Drupal\Core\Entity\EntityTypeBundleInfoInterface $entity_type_bundle_info
+   *   The entity type bundle service.
+   * @param \Drupal\Core\Routing\RouteMatchInterface $route_match
+   *   The route matcher, used to retrieve parameters from the route.
+   * @param \Drupal\rng\RegistrantFactoryInterface $registrant_factory
+   *   The factory for creating a registrant entities.
+   * @param \Drupal\commerce_rng\Form\RegistrantFormHelperInterface $registrant_form_helper
+   *   Helper class for generating registrant forms.
    */
   public function __construct(
     EntityTypeManagerInterface $entity_type_manager,
@@ -306,10 +328,14 @@ class RegistrantAddForm extends FormBase implements AjaxFormInterface, Registran
   /**
    * Builds a table of persons to choose from.
    *
-   * @param \Drupal\Core\Entity\EntityInterface[]
+   * @param array $element
+   *   The form element to add the persons table to.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The current state of the form.
+   * @param \Drupal\Core\Entity\EntityInterface[] $persons
    *   The person to display in the table.
    *
-   * @return []
+   * @return array
    *   The form element.
    */
   protected function buildPersonsTable(array $element, FormStateInterface $form_state, array $persons) {

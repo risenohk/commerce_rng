@@ -1,7 +1,5 @@
 <?php
 
-// @todo update
-
 namespace Drupal\commerce_rng\Form;
 
 use Drupal\commerce_order\Entity\Order;
@@ -17,23 +15,40 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Provides the registrant delete form.
+ *
+ * @todo needs update
  */
 class RegistrantDeleteForm extends ContentEntityDeleteForm implements AjaxFormInterface, RegistrantFormInterface {
 
   use AjaxButtonsTrait;
 
   /**
+   * The order to which the registration belongs.
+   *
    * @var \Drupal\commerce_order\Entity\OrderInterface
    */
   protected $order;
 
   /**
+   * The route matcher, used to retrieve parameters from the route.
+   *
    * @var \Drupal\Core\Routing\RouteMatchInterface
    */
   protected $routeMatch;
 
   /**
    * Constructs a new RegistrantDeleteForm.
+   *
+   * @param \Drupal\Core\Entity\EntityManagerInterface $entity_manager
+   *   The entity manager.
+   * @param \Drupal\Core\Entity\EntityTypeBundleInfoInterface $entity_type_bundle_info
+   *   The entity type bundle service.
+   * @param \Drupal\Component\Datetime\TimeInterface $time
+   *   The time service.
+   * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
+   *   The module handler.
+   * @param \Drupal\Core\Routing\RouteMatchInterface $route_match
+   *   The route matcher, used to retrieve parameters from the route.
    */
   public function __construct(
     EntityManagerInterface $entity_manager,
@@ -75,13 +90,6 @@ class RegistrantDeleteForm extends ContentEntityDeleteForm implements AjaxFormIn
     return $this->t('Do you want to delete this registration for %person?', [
       '%person' => $identity->label(),
     ]);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getDescription() {
-    //return t('This will only remove the registration for this person. It will not delete the person.');
   }
 
   /**

@@ -6,7 +6,6 @@ use Drupal\commerce_order\Entity\OrderInterface;
 use Drupal\commerce_order\Entity\OrderItemInterface;
 use Drupal\commerce_product\Entity\ProductVariationType;
 use Drupal\commerce_product\Entity\ProductVariationInterface;
-use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\Query\QueryFactory;
 use Drupal\rng\EventManagerInterface;
@@ -102,7 +101,7 @@ class RegistrationData implements RegistrationDataInterface {
   /**
    * Returns the order item's product if the product is a RNG event.
    *
-   * @param \Drupal\commerce_order\Entity\OrderItemInterface
+   * @param \Drupal\commerce_order\Entity\OrderItemInterface $order_item
    *   The order item to check for.
    *
    * @return \Drupal\commerce_product\Entity\ProductInterface|null
@@ -121,10 +120,10 @@ class RegistrationData implements RegistrationDataInterface {
   /**
    * Builds registrant list per order item.
    *
-   * @param \Drupal\commerce_order\Entity\OrderInterface
+   * @param \Drupal\commerce_order\Entity\OrderInterface $order
    *   The order to build a registrant list for.
    *
-   * @return []
+   * @return array
    *   A drupal render array.
    */
   public function buildRegistrantLists(OrderInterface $order) {
@@ -163,12 +162,12 @@ class RegistrationData implements RegistrationDataInterface {
   /**
    * Returns the order item from the registration.
    *
-   * @param \Drupal\rng\RegistrationInterface
+   * @param \Drupal\rng\RegistrationInterface $registration
    *   The registration entity.
    *
    * @return \Drupal\commerce_order\Entity\OrderItemInterface|null
-   *   The order item associated with the registration or null, if the registration
-   *   does not have an order item.
+   *   The order item associated with the registration or null, if the
+   *   registration does not have an order item.
    */
   public function registrationGetOrderItem(RegistrationInterface $registration) {
     if ($registration->hasField('field_order_item')) {
@@ -178,9 +177,11 @@ class RegistrationData implements RegistrationDataInterface {
   }
 
   /**
-   * Updates the order item quantity based on the number of registrants for this item.
+   * Updates the order item quantity.
    *
-   * @param \Drupal\commerce_order\Entity\OrderItemInterface
+   * This is based on the number of registrants for this item.
+   *
+   * @param \Drupal\commerce_order\Entity\OrderItemInterface $order_item
    *   The order item to update.
    */
   public function orderItemUpdateQuantity(OrderItemInterface $order_item) {
@@ -196,9 +197,15 @@ class RegistrationData implements RegistrationDataInterface {
   }
 
   /**
+   * Formats registration data in a simple format.
+   *
+   * @param \Drupal\rng\RegistrationInterface[] $registrations
+   *   A list of registrations.
+   *
    * @return array
+   *   An array of registration data.
    */
-  private function loadRegistrationData($registrations) {
+  private function loadRegistrationData(array $registrations) {
     $data = [];
 
     foreach ($registrations as $registration) {
@@ -209,7 +216,7 @@ class RegistrationData implements RegistrationDataInterface {
       $product_variation = $order_item->getPurchasedEntity();
       $product_variation_type = ProductVariationType::load($product_variation->bundle());
 
-      $billing_profile = null;
+      $billing_profile = NULL;
       if ($order->getBillingProfile()) {
         $billing_profile = $order->getBillingProfile()->get('address')[0];
       }
@@ -229,7 +236,7 @@ class RegistrationData implements RegistrationDataInterface {
         'registrant_company' => $billing_profile ? $billing_profile->getOrganization() : '',
       ];
 
-      // get the registrants
+      // Get the registrants.
       $registrant_ids = \Drupal::entityQuery('registrant')
         ->condition('registration', $registration->id())
         ->execute();
@@ -262,4 +269,5 @@ class RegistrationData implements RegistrationDataInterface {
 
     return $data;
   }
+
 }

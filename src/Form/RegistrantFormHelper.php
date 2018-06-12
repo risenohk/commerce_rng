@@ -30,7 +30,9 @@ class RegistrantFormHelper implements RegistrantFormHelperInterface {
   /**
    * Constructs a new RegistrantFormHelper object.
    *
-   * @param \Drupal\rng\EventManagerInterface
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
+   *   The entity type manager.
+   * @param \Drupal\rng\EventManagerInterface $event_manager
    *   The event manager.
    */
   public function __construct(EntityTypeManagerInterface $entity_type_manager, EventManagerInterface $event_manager) {
@@ -52,11 +54,11 @@ class RegistrantFormHelper implements RegistrantFormHelperInterface {
   public function getIdentityType(EntityInterface $event) {
     $identity_types = $this->eventManager->getMeta($event)->getCreatableIdentityTypes();
     if (count($identity_types) > 1) {
-      throw new \Exception('Multiple identity types is not supported by Commerce RNG.');
+      throw new \Exception('Multiple identity types is not supported by UKKB Study.');
     }
     foreach ($identity_types as $entity_type_id => $bundles) {
       if (count($bundles) > 1) {
-        throw new \Exception('Multiple identity types is not supported by Commerce RNG.');
+        throw new \Exception('Multiple identity types is not supported by UKKB Study.');
       }
       $bundle = reset($bundles);
       return [$entity_type_id, $bundle];
@@ -122,7 +124,7 @@ class RegistrantFormHelper implements RegistrantFormHelperInterface {
    * @todo make protected.
    */
   public function createPersonForRegistrant(RegistrantInterface $registrant) {
-    /** @var \Drupal\Core\Entity\EntityInterface */
+    /** @var \Drupal\Core\Entity\EntityInterface $event */
     $event = $this->getEvent($registrant);
 
     $person = $registrant->getIdentity();
@@ -147,7 +149,7 @@ class RegistrantFormHelper implements RegistrantFormHelperInterface {
     $form_state->set('registrant__form_display', $display);
     $form_state->set('registrant__entity', $registrant);
 
-    // Person form.   
+    // Person form.
     $form['person'] = [
       '#parents' => array_merge($form['#parents'], ['person']),
       '#weight' => -1,
@@ -183,7 +185,7 @@ class RegistrantFormHelper implements RegistrantFormHelperInterface {
    * {@inheritdoc}
    */
   public function buildPersonFormByRegistrant(array $form, FormStateInterface $form_state, RegistrantInterface $registrant) {
-    /** @var \Drupal\Core\Entity\EntityInterface */
+    /** @var \Drupal\Core\Entity\EntityInterface $event */
     $event = $this->getEvent($registrant);
 
     $person = $registrant->getIdentity();

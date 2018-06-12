@@ -3,7 +3,6 @@
 namespace Drupal\commerce_rng\Form;
 
 use Drupal\Core\Form\FormInterface;
-use Drupal\Core\Form\FormStateInterface;
 
 /**
  * Interface for a registrant form.

@@ -10,7 +10,6 @@ use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Url;
-use Drupal\commerce_rng\Form\RegistrantFormHelperInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -21,11 +20,15 @@ class RegistrantForm extends ContentEntityForm implements AjaxFormInterface, Reg
   use AjaxButtonsTrait;
 
   /**
+   * The route matcher, used to retrieve parameters from the route.
+   *
    * @var \Drupal\Core\Routing\RouteMatchInterface
    */
   protected $routeMatch;
 
   /**
+   * The order to which the registration belongs.
+   *
    * @var \Drupal\commerce_order\Entity\OrderInterface
    */
   protected $order;
@@ -39,6 +42,19 @@ class RegistrantForm extends ContentEntityForm implements AjaxFormInterface, Reg
 
   /**
    * Constructs a new RegistrantForm.
+   *
+   * @param \Drupal\Core\Entity\EntityManagerInterface $entity_manager
+   *   The entity manager.
+   * @param \Drupal\Core\Entity\EntityTypeBundleInfoInterface $entity_type_bundle_info
+   *   The entity type bundle service.
+   * @param \Drupal\Component\Datetime\TimeInterface $time
+   *   The time service.
+   * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
+   *   The module handler.
+   * @param \Drupal\Core\Routing\RouteMatchInterface $route_match
+   *   The route matcher, used to retrieve parameters from the route.
+   * @param \Drupal\commerce_rng\Form\RegistrantFormHelperInterface $registrant_form_helper
+   *   Helper class for generating registrant forms.
    */
   public function __construct(
     EntityManagerInterface $entity_manager,
