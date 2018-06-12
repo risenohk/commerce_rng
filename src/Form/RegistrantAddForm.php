@@ -383,6 +383,10 @@ class RegistrantAddForm extends FormBase implements AjaxFormInterface, Registran
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $this->registrantFormHelper->submitRegistrantForm($form, $form_state);
 
+    // Update order.
+    $this->order->recalculateTotalPrice();
+    $this->order->save();
+
     // Redirect to the order.
     $form_state->setRedirectUrl($this->getReturnUrl());
   }

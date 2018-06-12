@@ -149,6 +149,10 @@ class RegistrantForm extends ContentEntityForm implements AjaxFormInterface, Reg
       $this->entity->save();
     }
 
+    // Update order.
+    $this->order->recalculateTotalPrice();
+    $this->order->save();
+
     // Redirect to the order.
     $url = Url::fromRoute('entity.commerce_order.edit_form', ['commerce_order' => $this->order->id()]);
     $form_state->setRedirectUrl($url);

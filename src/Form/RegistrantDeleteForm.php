@@ -139,6 +139,10 @@ class RegistrantDeleteForm extends ContentEntityDeleteForm implements AjaxFormIn
   public function submitForm(array &$form, FormStateInterface $form_state) {
     parent::submitForm($form, $form_state);
 
+    // Update order.
+    $this->order->recalculateTotalPrice();
+    $this->order->save();
+
     // Redirect to the order.
     $url = Url::fromRoute('entity.commerce_order.edit_form', ['commerce_order' => $this->order->id()]);
     $form_state->setRedirectUrl($url);
