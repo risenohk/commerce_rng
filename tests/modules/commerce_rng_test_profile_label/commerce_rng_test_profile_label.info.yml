@@ -1,0 +1,5 @@
+name: Commerce RNG Test Profile label
+type: module
+description: 'Sets a label for person profiles.'
+package: Testing
+core: 8.x

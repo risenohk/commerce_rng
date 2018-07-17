@@ -2,6 +2,8 @@
 
 namespace Drupal\Tests\commerce_rng\Functional;
 
+use Drupal\field\Entity\FieldConfig;
+use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\Tests\commerce\Functional\CommerceBrowserTestBase;
 
 /**
@@ -13,7 +15,14 @@ abstract class CommerceRngBrowserTestBase extends CommerceBrowserTestBase {
    * {@inheritdoc}
    */
   public static $modules = [
+    'system',
+    'block',
+    'field',
+    'commerce',
+    'commerce_price',
+    'commerce_store',
     'commerce_rng',
+    'commerce_rng_test_profile_label',
   ];
 
   /**

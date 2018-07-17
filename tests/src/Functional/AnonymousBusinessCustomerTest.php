@@ -2,6 +2,8 @@
 
 namespace Drupal\Tests\commerce_rng\Functional;
 
+use Drupal\commerce_order\Entity\Order;
+
 /**
  * Tests for an anonymous user checking out as business customer.
  *
@@ -11,14 +13,13 @@ class AnonymousBusinessCustomerTest extends CommerceRngBrowserTestBase {
 
   /**
    * Basic test.
+   *
+   * Tests adding three registrants for an event for an anonymous user.
    */
   public function test() {
     $this->drupalLogout();
-    $this->drupalGet($this->product->toUrl()->toString());
-    $this->submitForm([], 'Add to cart');
-    $cart_link = $this->getSession()->getPage()->findLink('your cart');
-    $cart_link->click();
-    $this->submitForm([], 'Checkout');
+    $this->addProductToCart($this->product);
+    $this->goToCheckout();
 
     // Checkout as guest.
     $this->assertCheckoutProgressStep('Login');
@@ -26,25 +27,27 @@ class AnonymousBusinessCustomerTest extends CommerceRngBrowserTestBase {
     $this->assertCheckoutProgressStep('Event registration');
 
     // Save first registrant.
+    $this->clickLink('Add registrant');
     $this->submitForm([
-      'registrant_information[1][registrant][person][field_name][0][value]' => 'Person 1',
-      'registrant_information[1][registrant][person][field_email][0][value]' => 'person1@example.com',
-      'registrant_information[1][registrant][field_comments][0][value]' => 'No commments',
+      'person[field_name][0][value]' => 'Person 1',
+      'person[field_email][0][value]' => 'person1@example.com',
+      'field_comments[0][value]' => 'No commments',
     ], 'Save');
 
     // Add second registrant.
-    $this->submitForm([], 'Add another registrant');
+    $this->clickLink('Add registrant');
     $this->submitForm([
-      'registrant_information[1][registrant][person][field_name][0][value]' => 'Person 2',
-      'registrant_information[1][registrant][person][field_email][0][value]' => 'person2@example.com',
+      'person[field_name][0][value]' => 'Person 2',
+      'person[field_email][0][value]' => 'person2@example.com',
     ], 'Save');
 
     // Add third registrant and continue to order information.
-    $this->submitForm([], 'Add another registrant');
+    $this->clickLink('Add registrant');
     $this->submitForm([
-      'registrant_information[1][registrant][person][field_name][0][value]' => 'Person 3',
-      'registrant_information[1][registrant][person][field_email][0][value]' => 'person3@example.com',
-    ], 'Continue');
+      'person[field_name][0][value]' => 'Person 3',
+      'person[field_email][0][value]' => 'person3@example.com',
+    ], 'Save');
+    $this->submitForm([], 'Continue');
 
     // Add order information.
     $this->assertCheckoutProgressStep('Order information');
@@ -65,15 +68,35 @@ class AnonymousBusinessCustomerTest extends CommerceRngBrowserTestBase {
     $this->assertSession()->pageTextContains('Contact information');
     $this->assertSession()->pageTextContains('Billing information');
     $this->assertSession()->pageTextContains('Order Summary');
-    // $this->assertSession()->pageTextContains('Person 1');
-    // $this->assertSession()->pageTextContains('Person 2');
-    // $this->assertSession()->pageTextContains('Person 3');
+    $this->assertSession()->pageTextContains('Person 1');
+    $this->assertSession()->pageTextContains('Person 2');
+    $this->assertSession()->pageTextContains('Person 3');
     // Finalize order.
-    $this->submitForm([], 'Pay and complete purchase');
+    $this->submitForm([], 'Complete checkout');
     $this->assertSession()->pageTextContains('Your order number is 1. You can view your order on your account page when logged in.');
     $this->assertSession()->pageTextContains('0 items');
 
-    // @todo Assert that three registrants were added to the order.
+    // Assert that three registrants were added to the order.
+    $order = Order::load(1);
+    $registrants = $this->container->get('commerce_rng.registration_data')->getOrderRegistrations($order);
+    $this->assertCount(3, $registrants);
+  }
+
+  /**
+   * Adds the given product to the cart.
+   */
+  protected function addProductToCart($product) {
+    $this->drupalGet($product->toUrl()->toString());
+    $this->submitForm([], 'Add to cart');
+  }
+
+  /**
+   * Proceeds to checkout.
+   */
+  protected function goToCheckout() {
+    $cart_link = $this->getSession()->getPage()->findLink('your cart');
+    $cart_link->click();
+    $this->submitForm([], 'Checkout');
   }
 
   /**

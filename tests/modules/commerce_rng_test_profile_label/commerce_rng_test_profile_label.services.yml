@@ -1,0 +1,5 @@
+services:
+  commerce_rng_test_profile_label.profile_label_event_subscriber:
+    class: Drupal\commerce_rng_test_profile_label\EventSubscriber\ProfileLabelEventSubscriber
+    tags:
+      - { name: 'event_subscriber' }
