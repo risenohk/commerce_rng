@@ -47,6 +47,16 @@ abstract class CommerceRngBrowserTestBase extends CommerceBrowserTestBase {
     $entity->setIdentityTypeCreate('profile', 'person', TRUE);
     $entity->save();
 
+    $this->product = $this->createEventWithVariation();
+  }
+
+  /**
+   * Creates a new product and product variation of type event.
+   *
+   * @return \Drupal\commerce_product\Entity\ProductInterface
+   *   The created product.
+   */
+  protected function createEventWithVariation() {
     $variation = $this->createEntity('commerce_product_variation', [
       'type' => 'event',
       'sku' => strtolower($this->randomMachineName()),
@@ -57,9 +67,9 @@ abstract class CommerceRngBrowserTestBase extends CommerceBrowserTestBase {
     ]);
 
     /** @var \Drupal\commerce_product\Entity\ProductInterface $product */
-    $this->product = $this->createEntity('commerce_product', [
+    $product = $this->createEntity('commerce_product', [
       'type' => 'event',
-      'title' => 'My event',
+      'title' => $this->randomMachineName(),
       'variations' => [$variation],
       'stores' => [$this->store],
       'rng_registrants_minimum' => 1,
@@ -67,6 +77,8 @@ abstract class CommerceRngBrowserTestBase extends CommerceBrowserTestBase {
       'rng_registrants_duplicate' => TRUE,
       'rng_registration_type' => ['standard_registration'],
     ]);
+
+    return $product;
   }
 
 }

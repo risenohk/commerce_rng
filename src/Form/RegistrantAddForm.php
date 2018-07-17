@@ -2,6 +2,7 @@
 
 namespace Drupal\commerce_rng\Form;
 
+use Drupal\commerce_rng\RegistrationDataInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\EntityTypeBundleInfoInterface;
 use Drupal\Core\Form\FormBase;
@@ -68,11 +69,18 @@ class RegistrantAddForm extends FormBase implements AjaxFormInterface, Registran
   protected $registration;
 
   /**
-   * The regristrant to add.
+   * The registrant to add.
    *
    * @var \Drupal\rng\RegistrantInterface
    */
   protected $registrant;
+
+  /**
+   * The registration data service.
+   *
+   * @var \Drupal\commerce_rng\RegistrationDataInterface
+   */
+  protected $registrationData;
 
   /**
    * Constructs a new RegistrantAddForm.
@@ -87,13 +95,16 @@ class RegistrantAddForm extends FormBase implements AjaxFormInterface, Registran
    *   The factory for creating a registrant entities.
    * @param \Drupal\commerce_rng\Form\RegistrantFormHelperInterface $registrant_form_helper
    *   Helper class for generating registrant forms.
+   * @param \Drupal\commerce_rng\RegistrationDataInterface $registration_data
+   *   The registration data service.
    */
   public function __construct(
     EntityTypeManagerInterface $entity_type_manager,
     EntityTypeBundleInfoInterface $entity_type_bundle_info,
     RouteMatchInterface $route_match,
     RegistrantFactoryInterface $registrant_factory,
-    RegistrantFormHelperInterface $registrant_form_helper
+    RegistrantFormHelperInterface $registrant_form_helper,
+    RegistrationDataInterface $registration_data
   ) {
 
     $this->entityTypeManager = $entity_type_manager;
@@ -101,6 +112,7 @@ class RegistrantAddForm extends FormBase implements AjaxFormInterface, Registran
     $this->routeMatch = $route_match;
     $this->registrantFactory = $registrant_factory;
     $this->registrantFormHelper = $registrant_form_helper;
+    $this->registrationData = $registration_data;
 
     $this->initConstruct();
   }
@@ -114,7 +126,8 @@ class RegistrantAddForm extends FormBase implements AjaxFormInterface, Registran
       $container->get('entity_type.bundle.info'),
       $container->get('current_route_match'),
       $container->get('rng.registrant.factory'),
-      $container->get('commerce_rng.registrant_form')
+      $container->get('commerce_rng.registrant_form'),
+      $container->get('commerce_rng.registration_data')
     );
   }
 
@@ -198,10 +211,35 @@ class RegistrantAddForm extends FormBase implements AjaxFormInterface, Registran
    *   A list of existing persons.
    */
   protected function getPersons() {
-    // Get identity entity type.
-    $event = $this->registrantFormHelper->getEvent($this->registrant);
-    list($person_entity_type_id, $person_bundle) = $this->registrantFormHelper->getIdentityType($event);
+    $persons = [];
 
+    // Persons from other registrations on the same order.
+    $registrations = $this->registrationData->getOrderRegistrations($this->order);
+    foreach ($registrations as $registration) {
+      if ($registration === $this->registration) {
+        continue;
+      }
+
+      foreach ($registration->getRegistrants() as $registrant) {
+        $person = $registrant->getIdentity();
+        if ($person) {
+          $persons[$person->id()] = $person;
+        }
+      }
+    }
+
+    $persons += $this->getOwnedPersons();
+
+    return $persons;
+  }
+
+  /**
+   * Returns a list of persons owned by the current logged in user.
+   *
+   * @return \Drupal\Core\Entity\EntityInterface[]
+   *   A list of existing persons.
+   */
+  protected function getOwnedPersons() {
     // Get owner.
     $uid = $this->order->getCustomerId();
     if (!$uid) {
@@ -209,12 +247,28 @@ class RegistrantAddForm extends FormBase implements AjaxFormInterface, Registran
       return [];
     }
 
+    // Get identity entity type.
+    $event = $this->registrantFormHelper->getEvent($this->registrant);
+    list($person_entity_type_id, $person_bundle) = $this->registrantFormHelper->getIdentityType($event);
+
     // Find existing identities.
     $storage = $this->entityTypeManager->getStorage($person_entity_type_id);
     $ids = $storage->getQuery()
       ->condition('type', $person_bundle)
       ->condition('uid', $uid)
       ->execute();
+
+    if (empty($ids)) {
+      return [];
+    }
+
+    // Remove any ID's that are already in current registration.
+    foreach ($this->registration->getRegistrants() as $registrant) {
+      $person = $registrant->getIdentity();
+      if ($person) {
+        unset($ids[$person->id()]);
+      }
+    }
 
     if (empty($ids)) {
       return [];
