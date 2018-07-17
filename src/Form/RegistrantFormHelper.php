@@ -2,6 +2,8 @@
 
 namespace Drupal\commerce_rng\Form;
 
+use Drupal\commerce_order\Entity\OrderInterface;
+use Drupal\commerce_rng\RegistrationDataInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormStateInterface;
@@ -28,16 +30,26 @@ class RegistrantFormHelper implements RegistrantFormHelperInterface {
   protected $eventManager;
 
   /**
+   * The registration data service.
+   *
+   * @var \Drupal\commerce_rng\RegistrationDataInterface
+   */
+  protected $registrationData;
+
+  /**
    * Constructs a new RegistrantFormHelper object.
    *
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   The entity type manager.
    * @param \Drupal\rng\EventManagerInterface $event_manager
    *   The event manager.
+   * @param \Drupal\commerce_rng\RegistrationDataInterface
+   *   The registration data service.
    */
-  public function __construct(EntityTypeManagerInterface $entity_type_manager, EventManagerInterface $event_manager) {
+  public function __construct(EntityTypeManagerInterface $entity_type_manager, EventManagerInterface $event_manager, RegistrationDataInterface $registration_data) {
     $this->entityTypeManager = $entity_type_manager;
     $this->eventManager = $event_manager;
+    $this->registrationData = $registration_data;
   }
 
   /**
@@ -54,11 +66,11 @@ class RegistrantFormHelper implements RegistrantFormHelperInterface {
   public function getIdentityType(EntityInterface $event) {
     $identity_types = $this->eventManager->getMeta($event)->getCreatableIdentityTypes();
     if (count($identity_types) > 1) {
-      throw new \Exception('Multiple identity types is not supported by UKKB Study.');
+      throw new \Exception('Multiple identity types is not supported by Commerce RNG.');
     }
     foreach ($identity_types as $entity_type_id => $bundles) {
       if (count($bundles) > 1) {
-        throw new \Exception('Multiple identity types is not supported by UKKB Study.');
+        throw new \Exception('Multiple identity types is not supported by Commerce RNG.');
       }
       $bundle = reset($bundles);
       return [$entity_type_id, $bundle];
@@ -70,7 +82,7 @@ class RegistrantFormHelper implements RegistrantFormHelperInterface {
   /**
    * Returns the event entity.
    *
-   * @param \Drupal\Core\Entity\EntityInterface $registrant
+   * @param \Drupal\rng\RegistrantInterface $registrant
    *   A registrant entity.
    *
    * @return \Drupal\Core\Entity\EntityInterface
@@ -81,7 +93,7 @@ class RegistrantFormHelper implements RegistrantFormHelperInterface {
    *
    * @todo make protected again.
    */
-  public function getEvent(EntityInterface $registrant) {
+  public function getEvent(RegistrantInterface $registrant) {
     $registration = $registrant->getRegistration();
     if (!$registration) {
       throw new \Exception('The registration for this registrant no longer exists.');
@@ -93,6 +105,25 @@ class RegistrantFormHelper implements RegistrantFormHelperInterface {
     }
 
     return $event;
+  }
+
+  /**
+   * Returns the order to which the registrant belongs.
+   *
+   * @param \Drupal\rng\RegistrantInterface $registrant
+   *   A registrant entity.
+   *
+   * @return \Drupal\commerce\Entity\OrderInterface
+   *   The order entity.
+   */
+  protected function getOrder(RegistrantInterface $registrant) {
+    $registration = $registrant->getRegistration();
+    if (!$registration) {
+      throw new \Exception('The registration for this registrant no longer exists.');
+    }
+
+    return $this->registrationData->registrationGetOrderItem($registration)
+      ->getOrder();
   }
 
   /**
@@ -171,7 +202,7 @@ class RegistrantFormHelper implements RegistrantFormHelperInterface {
     // Set person values.
     $values = $form_state->getValue($form['#array_parents']);
     if (isset($values['person'])) {
-      $person = $this->submitPersonForm($form['person'], $form_state);
+      $person = $this->submitPersonForm($form['person'], $form_state, $this->getOrder($registrant));
       $registrant->setIdentity($person);
     }
 
@@ -220,10 +251,18 @@ class RegistrantFormHelper implements RegistrantFormHelperInterface {
   /**
    * {@inheritdoc}
    */
-  public function submitPersonForm(array &$form, FormStateInterface $form_state) {
+  public function submitPersonForm(array &$form, FormStateInterface $form_state, OrderInterface $order) {
     $display = $form_state->get('person__form_display');
     $person = $form_state->get('person__entity');
     $display->extractFormValues($person, $form, $form_state);
+
+    // Set owner on person.
+    $uid = $order->getCustomerId();
+    if ($uid) {
+      $person->setOwnerId($uid);
+    }
+
+    // And save.
     $person->save();
 
     return $person;

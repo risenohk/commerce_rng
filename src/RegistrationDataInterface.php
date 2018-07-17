@@ -3,11 +3,24 @@
 namespace Drupal\commerce_rng;
 
 use Drupal\commerce_order\Entity\OrderInterface;
+use Drupal\rng\RegistrationInterface;
 
 /**
  * Interface for dealing with registrations on orders.
  */
 interface RegistrationDataInterface {
+
+  /**
+   * Returns the order item from the registration.
+   *
+   * @param \Drupal\rng\RegistrationInterface $registration
+   *   The registration entity.
+   *
+   * @return \Drupal\commerce_order\Entity\OrderItemInterface|null
+   *   The order item associated with the registration or null, if the
+   *   registration does not have an order item.
+   */
+  public function registrationGetOrderItem(RegistrationInterface $registration);
 
   /**
    * Returns all registrations.

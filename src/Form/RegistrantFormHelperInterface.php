@@ -2,6 +2,7 @@
 
 namespace Drupal\commerce_rng\Form;
 
+use Drupal\commerce_order\Entity\OrderInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\rng\RegistrantInterface;
@@ -82,6 +83,6 @@ interface RegistrantFormHelperInterface {
    * @return \Drupal\Core\Entity\EntityInterface
    *   The created person.
    */
-  public function submitPersonForm(array &$form, FormStateInterface $form_state);
+  public function submitPersonForm(array &$form, FormStateInterface $form_state, OrderInterface $order);
 
 }

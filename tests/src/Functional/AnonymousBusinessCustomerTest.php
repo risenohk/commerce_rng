@@ -3,6 +3,7 @@
 namespace Drupal\Tests\commerce_rng\Functional;
 
 use Drupal\commerce_order\Entity\Order;
+use Drupal\profile\Entity\Profile;
 
 /**
  * Tests for an anonymous user checking out as business customer.
@@ -80,6 +81,32 @@ class AnonymousBusinessCustomerTest extends CommerceRngBrowserTestBase {
     $order = Order::load(1);
     $registrants = $this->container->get('commerce_rng.registration_data')->getOrderRegistrations($order);
     $this->assertCount(3, $registrants);
+  }
+
+  /**
+   * Tests new persons ownership for logged in customers.
+   *
+   * When a logged in customer adds a new person for an event, that customer
+   * should then immediately become the owner of the person entity.
+   */
+  public function testNewPersonsOwnershipExistingCustomers() {
+    $this->addProductToCart($this->product);
+    $this->goToCheckout();
+    $this->assertCheckoutProgressStep('Event registration');
+
+    // Save first registrant.
+    $this->clickLink('Add registrant');
+    $this->submitForm([
+      'person[field_name][0][value]' => 'Person 1',
+      'person[field_email][0][value]' => 'person1@example.com',
+      'field_comments[0][value]' => 'No commments',
+    ], 'Save');
+
+    // Assert that this person profile is now owned by the current logged in user.
+    $person = Profile::load(1);
+    // Assert that we are checking the expected person.
+    $this->assertEquals('Person 1', $person->field_name->value);
+    $this->assertEquals($this->adminUser->id(), $person->getOwnerId());
   }
 
   /**

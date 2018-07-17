@@ -160,14 +160,7 @@ class RegistrationData implements RegistrationDataInterface {
   }
 
   /**
-   * Returns the order item from the registration.
-   *
-   * @param \Drupal\rng\RegistrationInterface $registration
-   *   The registration entity.
-   *
-   * @return \Drupal\commerce_order\Entity\OrderItemInterface|null
-   *   The order item associated with the registration or null, if the
-   *   registration does not have an order item.
+   * {@inheritdoc}
    */
   public function registrationGetOrderItem(RegistrationInterface $registration) {
     if ($registration->hasField('field_order_item')) {
