@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\commerce_rng_test_profile_label\EventSubscriber;
+namespace Drupal\commerce_rng\EventSubscriber;
 
 use Drupal\profile\Event\ProfileEvents;
 use Drupal\profile\Event\ProfileLabelEvent;
@@ -32,13 +32,17 @@ class ProfileLabelEventSubscriber implements EventSubscriberInterface {
     /** @var \Drupal\profile\Entity\ProfileInterface $profile */
     $profile = $event->getProfile();
 
-    switch ($profile->bundle()) {
-      case 'person':
-        $value = $profile->field_name->value;
-        if ($value) {
-          $event->setLabel($value);
-        }
-        break;
+    if ($profile->bundle() != 'person') {
+      return;
+    }
+
+    if (!$profile->hasField('field_name')) {
+      return;
+    }
+
+    $value = $profile->field_name->value;
+    if ($value) {
+      $event->setLabel($value);
     }
   }
 

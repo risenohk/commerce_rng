@@ -22,7 +22,6 @@ abstract class CommerceRngBrowserTestBase extends CommerceBrowserTestBase {
     'commerce_price',
     'commerce_store',
     'commerce_rng',
-    'commerce_rng_test_profile_label',
   ];
 
   /**
