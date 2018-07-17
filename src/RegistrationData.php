@@ -80,7 +80,7 @@ class RegistrationData implements RegistrationDataInterface {
     krsort($registration_ids);
 
     $registrations = $this->registrationManager->loadMultiple($registration_ids);
-    return $this->loadRegistrationData($registrations);
+    return $registrations;
   }
 
   /**
@@ -198,7 +198,7 @@ class RegistrationData implements RegistrationDataInterface {
    * @return array
    *   An array of registration data.
    */
-  private function loadRegistrationData(array $registrations) {
+  public function formatRegistrationData(array $registrations) {
     $data = [];
 
     foreach ($registrations as $registration) {

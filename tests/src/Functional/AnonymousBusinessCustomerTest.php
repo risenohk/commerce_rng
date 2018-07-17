@@ -79,7 +79,8 @@ class AnonymousBusinessCustomerTest extends CommerceRngBrowserTestBase {
 
     // Assert that three registrants were added to the order.
     $order = Order::load(1);
-    $registrants = $this->container->get('commerce_rng.registration_data')->getOrderRegistrations($order);
+    $registrations = $this->container->get('commerce_rng.registration_data')->getOrderRegistrations($order);
+    $registrants = $this->container->get('commerce_rng.registration_data')->formatRegistrationData($registrations);
     $this->assertCount(3, $registrants);
   }
 

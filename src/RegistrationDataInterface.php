@@ -28,8 +28,8 @@ interface RegistrationDataInterface {
    * @param \Drupal\commerce_order\Entity\OrderInterface $order
    *   The order to find all registrations for.
    *
-   * @return array
-   *   The registration data.
+   * @return \Drupal\rng\Entity\Registration[]
+   *   A list of registration entities.
    */
   public function getOrderRegistrations(OrderInterface $order);
 

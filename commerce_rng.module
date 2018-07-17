@@ -98,11 +98,12 @@ function commerce_rng_form_commerce_order_event_edit_form_alter(array &$form, Fo
 
   // Set up the registration output.
   $registrations = $order_services->getOrderRegistrations($order);
+  $registrant_data = $order_services->formatRegistrationData($registrations);
   $buffer = [];
 
-  foreach ($registrations as $registration) {
-    $product_variation_id = $registration['product_variation_id'];
-    $product_variation_title = $registration['product_variation_title'];
+  foreach ($registrant_data as $registrant) {
+    $product_variation_id = $registrant['product_variation_id'];
+    $product_variation_title = $registrant['product_variation_title'];
     if (!isset($buffer[$product_variation_id])) {
       $form['registrations-wrapper'][$product_variation_id] = [
         '#type' => 'container',
@@ -121,7 +122,7 @@ function commerce_rng_form_commerce_order_event_edit_form_alter(array &$form, Fo
       $create_link = Link::fromTextAndUrl('add registrant',
         Url::fromRoute('commerce_rng.registrant_form.add', [
           'commerce_order' => $order->id(),
-          'registration' => $registration['registration_id'],
+          'registration' => $registrant['registration_id'],
         ]))->toString();
       $buffer[$product_variation_id]['add_link'] = [
         '#markup' => $create_link,
@@ -133,19 +134,19 @@ function commerce_rng_form_commerce_order_event_edit_form_alter(array &$form, Fo
     $edit_link = Link::fromTextAndUrl('edit',
       Url::fromRoute('commerce_rng.registrant_form.edit', [
         'commerce_order'      => $order->id(),
-        'registrant'          => $registration['registrant_id'],
+        'registrant'          => $registrant['registrant_id'],
       ]))->toString();
 
     $delete_link = Link::fromTextAndUrl('delete',
       Url::fromRoute('commerce_rng.registrant_form.delete', [
         'commerce_order'      => $order->id(),
-        'registrant'          => $registration['registrant_id'],
+        'registrant'          => $registrant['registrant_id'],
       ]))->toString();
 
     $buffer[$product_variation_id]['registrants'][] = [
       '#type' => 'item',
       '#markup' => t('@label (@edit | @delete)', [
-        '@label' => $registration['registrant_label'],
+        '@label' => $registrant['registrant_label'],
         '@edit' => $edit_link,
         '@delete' => $delete_link,
       ]),
