@@ -31,7 +31,7 @@ after he/she creates an account at the end, you'll need to apply the patch
 "commerce-checkout-pane-guest-registration-2857157-88.patch" to Commerce.
 
 
-##Known issues
+## Known issues
 
 - When adding, editing or removing registrants on checkout via AJAX, the
   checkout panes are not updated.
