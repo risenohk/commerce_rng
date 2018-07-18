@@ -1,6 +1,6 @@
 Commerce RNG
 ============
-This is an example implementation of how an integration beteen RNG and Commerce
+This is an example implementation of how an integration between RNG and Commerce
 could work.
 
 It makes the following assumptions:
