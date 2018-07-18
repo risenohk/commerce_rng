@@ -24,6 +24,10 @@ When using RNG 8.x-1.5 (the latest release at the time of writing), you'll need
 to apply the patch "rng-152-event-type-get-identity-type-entity-form-mode.patch"
 to RNG.
 
+To ensure persons created by an anonymous customer get owned by the customer
+after he/she creates an account at the end, you'll need to apply the patch
+"commerce-checkout-pane-guest-registration-2857157-88.patch" to Commerce.
+
 
 Known issues
 ------------

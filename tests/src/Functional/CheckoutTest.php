@@ -172,6 +172,90 @@ class CheckoutTest extends CommerceRngBrowserTestBase {
   }
 
   /**
+   * Tests new persons ownership for *not* logged in customers.
+   *
+   * When an anonymous user adds a new person for an event, that user should
+   * then become the owner of the person entity when it creates an account at
+   * the end of the process.
+   *
+   * Requires the following patch:
+   * https://www.drupal.org/files/issues/2018-07-06/commerce-checkout-pane-guest-registration-2857157-88.patch
+   */
+  public function testNewPersonsOwnershipNewCustomers() {
+    if (!class_exists('Drupal\commerce_checkout\Event\CheckoutEvents') || !defined('Drupal\commerce_checkout\Event\CheckoutEvents::ACCOUNT_CREATE')) {
+      $this->markTestSkipped("The patch 'commerce-checkout-pane-guest-registration-2857157-88.patch' has not been applied to Commerce.");
+    }
+
+    // Enable the completion_registration pane.
+    /** @var \Drupal\commerce_checkout\Entity\CheckoutFlowInterface $checkout_flow */
+    $checkout_flow = $this->container
+      ->get('entity_type.manager')
+      ->getStorage('commerce_checkout_flow')
+      ->load('event');
+    /** @var \Drupal\commerce_checkout\Plugin\Commerce\CheckoutFlow\CheckoutFlowInterface $checkout_flow_plugin */
+    $checkout_flow_plugin = $checkout_flow->getPlugin();
+    /** @var \Drupal\commerce_checkout\Plugin\Commerce\CheckoutPane\CompletionRegistration $pane */
+    $pane = $checkout_flow_plugin->getPane('completion_registration');
+    $pane->setConfiguration([]);
+    $pane->setStepId('complete');
+    $checkout_flow_plugin_configuration = $checkout_flow_plugin->getConfiguration();
+    $checkout_flow_plugin_configuration['panes']['completion_registration'] = $pane->getConfiguration();
+    $checkout_flow_plugin->setConfiguration($checkout_flow_plugin_configuration);
+    $checkout_flow->save();
+
+    $this->drupalGet('admin/commerce/config/checkout-flows/manage/event');
+
+    $this->drupalLogout();
+    $this->addProductToCart($this->product);
+    $this->goToCheckout();
+
+    // Checkout as guest.
+    $this->assertCheckoutProgressStep('Login');
+    $this->submitForm([], 'Continue as Guest');
+    $this->assertCheckoutProgressStep('Event registration');
+
+    // Add registrant.
+    $this->clickLink('Add registrant');
+    $this->submitForm([
+      'person[field_name][0][value]' => 'Person 1',
+      'person[field_email][0][value]' => 'person1@example.com',
+    ], 'Save');
+    $this->submitForm([], 'Continue');
+
+    // Add order information.
+    $this->assertSession()->pageTextContains('1 item');
+    $this->processOrderInformation();
+
+    // Review.
+    $this->assertCheckoutProgressStep('Review');
+    $this->assertSession()->pageTextContains('Contact information');
+    $this->assertSession()->pageTextContains('Billing information');
+    $this->assertSession()->pageTextContains('Order Summary');
+    $this->assertSession()->pageTextContains('Person 1');
+    // Finalize order.
+    $this->submitForm([], 'Complete checkout');
+    $this->assertSession()->pageTextContains('Your order number is 1. You can view your order on your account page when logged in.');
+    $this->assertSession()->pageTextContains('0 items');
+
+    // Assert that the completion_registration checkout pane is shown.
+    $this->assertSession()->pageTextContains('Create an account?');
+    // Register.
+    $this->submitForm([
+      'completion_registration[register][name]' => 'User name',
+      'completion_registration[register][password][pass1]' => 'pass',
+      'completion_registration[register][password][pass2]' => 'pass',
+    ], 'Create my account');
+    // Assert that the account was created successfully.
+    $this->assertSession()->pageTextContains('Registration successful. You are now logged in.');
+
+    // Assert ownership created profile.
+    $person = Profile::load(1);
+    // Assert that we are checking the expected person.
+    $this->assertEquals('Person 1', $person->field_name->value);
+    $this->assertEquals(3, $person->getOwnerId());
+  }
+
+  /**
    * Adds the given product to the cart.
    *
    * @param \Drupal\commerce_product\Entity\ProductInterface $product
