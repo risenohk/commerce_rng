@@ -11,7 +11,7 @@ use Drupal\profile\Entity\Profile;
  *
  * @group commerce_rng
  */
-class AnonymousBusinessCustomerTest extends CommerceRngBrowserTestBase {
+class CheckoutTest extends CommerceRngBrowserTestBase {
 
   /**
    * Basic test.
