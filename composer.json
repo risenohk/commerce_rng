@@ -1,0 +1,13 @@
+{
+    "name": "megachriz/commerce_rng",
+    "type": "drupal-module",
+    "description": "This is an example implementation of how an integration between RNG and Commerce could work.",
+    "homepage": "https://www.drupal.org/sandbox/megachriz/2940732",
+    "license": "GPL-2.0+",
+    "require": {
+        "drupal/core": "~8.5",
+        "drupal/rg": "^1.5",
+        "drupal/commerce": "^2.8"
+    },
+    "minimum-stability": "dev"
+}
