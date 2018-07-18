@@ -144,7 +144,7 @@ class RegistrantForm extends ContentEntityForm implements AjaxFormInterface, Reg
     // Update person.
     $values = $form_state->getValue($form['#array_parents']);
     if (isset($values['person'])) {
-      $person = $this->registrantFormHelper->submitPersonForm($form['person'], $form_state);
+      $person = $this->registrantFormHelper->submitPersonForm($form['person'], $form_state, $this->getOrder());
       $this->entity->setIdentity($person);
       $this->entity->save();
 
