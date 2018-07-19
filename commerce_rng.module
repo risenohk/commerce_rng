@@ -5,11 +5,14 @@
  * An implementation of integration between RNG and Commerce.
  */
 
+use Drupal\commerce_order\Entity\OrderInterface;
 use Drupal\commerce_order\Entity\OrderItemInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Link;
 use Drupal\Core\Url;
+use Drupal\profile\Entity\ProfileInterface;
 use Drupal\rng\RegistrantInterface;
+use Drupal\rng\RegistrationInterface;
 
 // ---------------------------------------------------------------------------
 // ENTITY HOOKS
@@ -55,6 +58,23 @@ function commerce_rng_registrant_update(RegistrantInterface $registrant) {
 function commerce_rng_registrant_delete(RegistrantInterface $registrant) {
   // Do the same as when inserting a registrant.
   commerce_rng_registrant_insert($registrant);
+}
+
+// ---------------------------------------------------------------------------
+// COMMERCE RNG HOOKS
+// ---------------------------------------------------------------------------
+
+/**
+ * Implements hook_commerce_rng_persons_list_alter().
+ */
+function commerce_rng_commerce_rng_persons_list_alter(array &$persons, OrderInterface $order, RegistrationInterface $registration) {
+  // If the list of persons are of entity type 'profile', remove inactive
+  // persons from the list.
+  foreach ($persons as $person_id => $person) {
+    if ($person instanceof ProfileInterface && !$person->isActive()) {
+      unset($persons[$person_id]);
+    }
+  }
 }
 
 // ---------------------------------------------------------------------------

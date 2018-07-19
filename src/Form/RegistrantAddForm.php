@@ -5,6 +5,7 @@ namespace Drupal\commerce_rng\Form;
 use Drupal\commerce_rng\RegistrationDataInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\EntityTypeBundleInfoInterface;
+use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
@@ -18,6 +19,13 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class RegistrantAddForm extends FormBase implements AjaxFormInterface, RegistrantFormInterface {
 
   use AjaxButtonsTrait;
+
+  /**
+   * The module handler.
+   *
+   * @var \Drupal\Core\Extension\ModuleHandlerInterface
+   */
+  protected $moduleHandler;
 
   /**
    * The entity type manager.
@@ -85,6 +93,8 @@ class RegistrantAddForm extends FormBase implements AjaxFormInterface, Registran
   /**
    * Constructs a new RegistrantAddForm.
    *
+   * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
+   *   The module handler.
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   The entity type manager.
    * @param \Drupal\Core\Entity\EntityTypeBundleInfoInterface $entity_type_bundle_info
@@ -99,6 +109,7 @@ class RegistrantAddForm extends FormBase implements AjaxFormInterface, Registran
    *   The registration data service.
    */
   public function __construct(
+    ModuleHandlerInterface $module_handler,
     EntityTypeManagerInterface $entity_type_manager,
     EntityTypeBundleInfoInterface $entity_type_bundle_info,
     RouteMatchInterface $route_match,
@@ -106,7 +117,7 @@ class RegistrantAddForm extends FormBase implements AjaxFormInterface, Registran
     RegistrantFormHelperInterface $registrant_form_helper,
     RegistrationDataInterface $registration_data
   ) {
-
+    $this->moduleHandler = $module_handler;
     $this->entityTypeManager = $entity_type_manager;
     $this->entityTypeBundleInfo = $entity_type_bundle_info;
     $this->routeMatch = $route_match;
@@ -122,6 +133,7 @@ class RegistrantAddForm extends FormBase implements AjaxFormInterface, Registran
    */
   public static function create(ContainerInterface $container) {
     return new static(
+      $container->get('module_handler'),
       $container->get('entity_type.manager'),
       $container->get('entity_type.bundle.info'),
       $container->get('current_route_match'),
@@ -230,6 +242,9 @@ class RegistrantAddForm extends FormBase implements AjaxFormInterface, Registran
 
     $persons += $this->getOwnedPersons();
 
+    // Allow other modules to alter the list of persons.
+    $this->moduleHandler->alter('commerce_rng_persons_list', $persons, $this->order, $this->registration);
+
     return $persons;
   }
 
@@ -261,6 +276,9 @@ class RegistrantAddForm extends FormBase implements AjaxFormInterface, Registran
     if (empty($ids)) {
       return [];
     }
+
+    // Ensure that the ID's keys and values are equal.
+    $ids = array_combine(array_values($ids), array_values($ids));
 
     // Remove any ID's that are already in current registration.
     foreach ($this->registration->getRegistrants() as $registrant) {
