@@ -494,13 +494,6 @@ class RegistrantAddForm extends FormBase implements AjaxFormInterface, Registran
 
     $person = $this->registrantFormHelper->createPersonForRegistrant($this->registrant);
     $this->registrant->setIdentity($person);
-
-    // Set owner on person.
-    $uid = $this->order->getCustomerId();
-    if ($uid) {
-      $person->setOwnerId($uid);
-      $person->save();
-    }
   }
 
   /**
