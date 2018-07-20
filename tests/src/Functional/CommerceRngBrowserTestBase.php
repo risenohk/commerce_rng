@@ -2,14 +2,15 @@
 
 namespace Drupal\Tests\commerce_rng\Functional;
 
-use Drupal\field\Entity\FieldConfig;
-use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\Tests\commerce\Functional\CommerceBrowserTestBase;
+use Drupal\Tests\commerce_rng\Traits\CommerceRngCommonTrait;
 
 /**
  * Provides a base class for Commerce functional tests.
  */
 abstract class CommerceRngBrowserTestBase extends CommerceBrowserTestBase {
+
+  use CommerceRngCommonTrait;
 
   /**
    * {@inheritdoc}
@@ -25,6 +26,13 @@ abstract class CommerceRngBrowserTestBase extends CommerceBrowserTestBase {
   ];
 
   /**
+   * A product that can be placed in a cart.
+   *
+   * @var \Drupal\commerce_product\Entity\ProductInterface
+   */
+  protected $product;
+
+  /**
    * {@inheritdoc}
    */
   protected function setUp() {
@@ -34,51 +42,9 @@ abstract class CommerceRngBrowserTestBase extends CommerceBrowserTestBase {
     $this->placeBlock('commerce_checkout_progress');
 
     // Change RNG settings.
-    $config = \Drupal::configFactory()->getEditable('rng.settings');
-    $config->set('identity_types', ['profile']);
-    $config->save();
+    $this->setUpRng();
 
-    // Update entity info.
-    $entity = $this->container
-      ->get('entity_type.manager')
-      ->getStorage('event_type')
-      ->load('commerce_product.event');
-    $entity->setIdentityTypeReference('profile', 'person', TRUE);
-    $entity->setIdentityTypeCreate('profile', 'person', TRUE);
-    $entity->save();
-
-    $this->product = $this->createEventWithVariation();
-  }
-
-  /**
-   * Creates a new product and product variation of type event.
-   *
-   * @return \Drupal\commerce_product\Entity\ProductInterface
-   *   The created product.
-   */
-  protected function createEventWithVariation() {
-    $variation = $this->createEntity('commerce_product_variation', [
-      'type' => 'event',
-      'sku' => strtolower($this->randomMachineName()),
-      'price' => [
-        'number' => 9.99,
-        'currency_code' => 'USD',
-      ],
-    ]);
-
-    /** @var \Drupal\commerce_product\Entity\ProductInterface $product */
-    $product = $this->createEntity('commerce_product', [
-      'type' => 'event',
-      'title' => $this->randomMachineName(),
-      'variations' => [$variation],
-      'stores' => [$this->store],
-      'rng_registrants_minimum' => 1,
-      'rng_status' => TRUE,
-      'rng_registrants_duplicate' => TRUE,
-      'rng_registration_type' => ['standard_registration'],
-    ]);
-
-    return $product;
+    $this->product = $this->createEventWithVariation($this->store);
   }
 
 }

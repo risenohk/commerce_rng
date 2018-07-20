@@ -2,12 +2,11 @@
 
 namespace Drupal\Tests\commerce_rng\Functional;
 
-use Drupal\commerce_product\Entity\ProductInterface;
 use Drupal\commerce_order\Entity\Order;
 use Drupal\profile\Entity\Profile;
 
 /**
- * Tests for an anonymous user checking out as business customer.
+ * Tests checkout.
  *
  * @group commerce_rng
  */
@@ -109,7 +108,7 @@ class CheckoutTest extends CommerceRngBrowserTestBase {
    * person should become choosable for the next event for the same order.
    */
   public function testNewPersonChoosableNewCustomers() {
-    $product2 = $this->createEventWithVariation();
+    $product2 = $this->createEventWithVariation($this->store);
 
     // Log out.
     $this->drupalLogout();
@@ -309,64 +308,6 @@ class CheckoutTest extends CommerceRngBrowserTestBase {
     $this->submitForm([], 'Complete checkout');
     $this->assertSession()->pageTextContains('Your order number is 1. You can view your order on your account page when logged in.');
     $this->assertSession()->pageTextContains('0 items');
-  }
-
-  /**
-   * Adds the given product to the cart.
-   *
-   * @param \Drupal\commerce_product\Entity\ProductInterface $product
-   *   The product to add to the cart.
-   */
-  protected function addProductToCart(ProductInterface $product) {
-    $this->drupalGet($product->toUrl()->toString());
-    $this->submitForm([], 'Add to cart');
-  }
-
-  /**
-   * Proceeds to checkout.
-   */
-  protected function goToCheckout() {
-    $cart_link = $this->getSession()->getPage()->findLink('your cart');
-    $cart_link->click();
-    $this->submitForm([], 'Checkout');
-  }
-
-  /**
-   * Asserts the current step in the checkout progress block.
-   *
-   * @param string $expected
-   *   The expected value.
-   */
-  protected function assertCheckoutProgressStep($expected) {
-    $current_step = $this->getSession()->getPage()->find('css', '.checkout-progress--step__current')->getText();
-    $this->assertEquals($expected, $current_step);
-  }
-
-  /**
-   * Processes order information step.
-   *
-   * @param bool $new_customer
-   *   Whether or not a new customer is checking out. Defaults to true.
-   */
-  protected function processOrderInformation($new_customer = TRUE) {
-    $edit = [
-      'billing_information[profile][address][0][address][given_name]' => $this->randomString(),
-      'billing_information[profile][address][0][address][family_name]' => $this->randomString(),
-      'billing_information[profile][address][0][address][organization]' => $this->randomString(),
-      'billing_information[profile][address][0][address][address_line1]' => $this->randomString(),
-      'billing_information[profile][address][0][address][postal_code]' => '94043',
-      'billing_information[profile][address][0][address][locality]' => 'Mountain View',
-      'billing_information[profile][address][0][address][administrative_area]' => 'CA',
-    ];
-    if ($new_customer) {
-      $edit += [
-        'contact_information[email]' => 'guest@example.com',
-      ];
-    }
-
-    // Add order information.
-    $this->assertCheckoutProgressStep('Order information');
-    $this->submitForm($edit, 'Continue to review');
   }
 
 }
