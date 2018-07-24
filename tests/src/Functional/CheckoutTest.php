@@ -133,7 +133,7 @@ class CheckoutTest extends CommerceRngBrowserTestBase {
 
     // Add registrant for second event.
     $this->clickLink('Add registrant', 1);
-    $this->assertText('Person 1');
+    $this->assertSession()->pageTextContains('Person 1');
 
     // Select person 1.
     $this->click('#edit-people-list .form-submit');
@@ -277,7 +277,7 @@ class CheckoutTest extends CommerceRngBrowserTestBase {
     // Go to add registrant page.
     $this->clickLink('Add registrant');
     // Assert that one person is already shown.
-    $this->assertText('Existing person');
+    $this->assertSession()->pageTextContains('Existing person');
     $this->submitForm([], 'New person');
 
     // Assert that no new profile is created yet.

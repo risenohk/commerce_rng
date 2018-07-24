@@ -317,6 +317,9 @@ class RegistrantAddForm extends FormBase implements AjaxFormInterface, Registran
     // Set #parents to 'top-level' by default.
     $form += ['#parents' => []];
 
+    // Check if we may use JS.
+    $use_js = $this->routeMatch->getParameter('js') == 'ajax' ? TRUE:FALSE;
+
     $identity = $this->registrant->getIdentity();
 
     if (!$identity) {
@@ -343,14 +346,16 @@ class RegistrantAddForm extends FormBase implements AjaxFormInterface, Registran
         '#name' => 'ajax-submit-' . implode('-', $form['persons']['#parents']) . '-' . 'new',
         '#type' => 'submit',
         '#value' => t('New person'),
-        '#ajax' => [
-          'callback' => [$this, 'ajaxRegistrantElement'],
-          'wrapper' => $this->getRegistrantWrapperId(),
-        ],
         '#submit' => [
           [$this, 'submitNewPerson'],
         ],
       ];
+      if ($use_js) {
+        $form['persons']['new']['#ajax'] = [
+          'callback' => [$this, 'ajaxRegistrantElement'],
+          'wrapper' => $this->getRegistrantWrapperId(),
+        ];
+      }
 
       // Cancel button.
       $form['actions']['cancel'] = $this->cancelButton($form, $form_state);
@@ -414,6 +419,9 @@ class RegistrantAddForm extends FormBase implements AjaxFormInterface, Registran
     // Set #parents to 'top-level' by default.
     $element += ['#parents' => []];
 
+    // Check if we may use JS.
+    $use_js = $this->routeMatch->getParameter('js') == 'ajax' ? TRUE:FALSE;
+
     $element['people_list'] = [
       '#type' => 'table',
       '#header' => [
@@ -424,24 +432,26 @@ class RegistrantAddForm extends FormBase implements AjaxFormInterface, Registran
 
     foreach ($persons as $i => $person) {
       $row = [];
-      $row[]['#markup'] = $person->label();
+      $row['person']['#markup'] = $person->label();
 
-      $row[] = [
+      $row['operations'] = [
         // Needs a name else the submission handlers think all buttons are the
         // last button.
         '#name' => 'ajax-submit-' . implode('-', $element['#parents']) . '-' . $i,
         '#type' => 'submit',
         '#value' => t('Select'),
-        '#ajax' => [
-          'callback' => [$this, 'ajaxRegistrantElement'],
-          'wrapper' => $this->getRegistrantWrapperId(),
-        ],
         '#limit_validation_errors' => [],
         '#submit' => [
           [$this, 'submitSelectPerson'],
         ],
         '#identity_element_registrant_row' => $i,
       ];
+      if ($use_js) {
+        $row['operations']['#ajax'] = [
+          'callback' => [$this, 'ajaxRegistrantElement'],
+          'wrapper' => $this->getRegistrantWrapperId(),
+        ];
+      }
 
       $element['people_list'][] = $row;
     }
