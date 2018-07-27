@@ -3,6 +3,7 @@
 namespace Drupal\commerce_rng\Form;
 
 use Drupal\commerce_rng\RegistrationDataInterface;
+use Drupal\Core\Ajax\InvokeCommand;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\EntityTypeBundleInfoInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
@@ -12,6 +13,7 @@ use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Url;
 use Drupal\rng\RegistrantFactoryInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Provides the registrant add form.
@@ -513,9 +515,15 @@ class RegistrantAddForm extends FormBase implements AjaxFormInterface, Registran
    *   An associative array containing the structure of the form.
    * @param \Drupal\Core\Form\FormStateInterface $form_state
    *   The current state of the form.
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   *   The current request.
    */
-  public function ajaxRegistrantElement(array $form, FormStateInterface $form_state) {
-    return $form;
+  public function ajaxRegistrantElement(array $form, FormStateInterface $form_state, Request $request) {
+    $renderer = \Drupal::service('main_content_renderer.ajax');
+    $response = $renderer->renderResponse($form, $request, $this->routeMatch);
+    $response->addCommand(new InvokeCommand('#drupal-modal', 'scrollTop', [0]));
+
+    return $response;
   }
 
 }
