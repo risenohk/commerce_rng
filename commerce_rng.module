@@ -210,3 +210,13 @@ function commerce_rng_preprocess_commerce_checkout_order_summary(&$variables) {
 
   $variables['order_item_extra'] = $registration_data->buildRegistrantLists($variables['order_entity']);
 }
+
+/**
+ * Implements hook_preprocess_THEME_HOOK() for theme hook 'commerce_order_receipt'.
+ */
+function commerce_rng_preprocess_commerce_order_receipt(&$variables) {
+  /** @var \Drupal\commerce_rng\RegistrationDataInterface $registration_data */
+  $registration_data = \Drupal::service('commerce_rng.registration_data');
+
+  $variables['order_item_extra'] = $registration_data->buildRegistrantLists($variables['order_entity']);
+}
