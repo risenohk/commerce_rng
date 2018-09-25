@@ -73,6 +73,11 @@ class RegistrationData implements RegistrationDataInterface {
     // Get all order items id's.
     $order_item_ids = array_column($order->order_items->getValue(), 'target_id');
 
+    if (empty($order_item_ids)) {
+      // No order items. Bail out to avoid invalid query.
+      return [];
+    }
+
     // Get all registrations referring these order id's.
     $registration_ids = $this->queryFactory->get('registration')
       ->condition('field_order_item', $order_item_ids, 'IN')
