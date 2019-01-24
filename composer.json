@@ -5,8 +5,8 @@
     "homepage": "https://www.drupal.org/sandbox/megachriz/2940732",
     "license": "GPL-2.0+",
     "require": {
-        "drupal/core": "~8.5",
-        "drupal/rg": "^1.5",
+        "drupal/core": "~8.6",
+        "drupal/rng": "^1.5",
         "drupal/commerce": "^2.8"
     },
     "minimum-stability": "dev"
