@@ -61,7 +61,7 @@ unit_kernel_tests: &unit_kernel_tests
     - run:
         working_directory: /var/www/html
         command: |
-          ./test.sh $CIRCLE_PROJECT_REPONAME
+          ./vendor/bin/phpunit -c core --group commerce_rng --testsuite unit,kernel --debug --verbose --log-junit artifacts/phpunit/phpunit.xml
 
     - store_test_results:
         path: /var/www/html/artifacts/phpunit
