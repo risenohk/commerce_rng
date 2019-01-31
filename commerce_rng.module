@@ -14,9 +14,9 @@ use Drupal\profile\Entity\ProfileInterface;
 use Drupal\rng\RegistrantInterface;
 use Drupal\rng\RegistrationInterface;
 
-// ---------------------------------------------------------------------------
-// ENTITY HOOKS
-// ---------------------------------------------------------------------------
+/*******************************************************************************
+ * ENTITY HOOKS
+ ******************************************************************************/
 
 /**
  * Implements hook_ENTITY_TYPE_presave() for entity type 'commerce_order_item'.
@@ -60,9 +60,9 @@ function commerce_rng_registrant_delete(RegistrantInterface $registrant) {
   commerce_rng_registrant_insert($registrant);
 }
 
-// ---------------------------------------------------------------------------
-// COMMERCE RNG HOOKS
-// ---------------------------------------------------------------------------
+/*******************************************************************************
+ * COMMERCE RNG HOOKS
+ ******************************************************************************/
 
 /**
  * Implements hook_commerce_rng_persons_list_alter().
@@ -77,9 +77,9 @@ function commerce_rng_commerce_rng_persons_list_alter(array &$persons, OrderInte
   }
 }
 
-// ---------------------------------------------------------------------------
-// FORM ALTERS
-// ---------------------------------------------------------------------------
+/*******************************************************************************
+ * FORM ALTERS
+ ******************************************************************************/
 
 /**
  * Implements hook_form_FORM_ID_alter() for form 'views_form_commerce_cart_form_default'.
@@ -190,9 +190,9 @@ function commerce_rng_form_commerce_order_event_edit_form_alter(array &$form, Fo
   }
 }
 
-// ---------------------------------------------------------------------------
-// THEMING
-// ---------------------------------------------------------------------------
+/*******************************************************************************
+ * THEMING
+ ******************************************************************************/
 
 /**
  * Implements hook_preprocess_THEME_HOOK() for theme hook 'commerce_checkout_order_summary'.

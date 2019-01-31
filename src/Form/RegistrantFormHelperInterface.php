@@ -79,6 +79,8 @@ interface RegistrantFormHelperInterface {
    *   The form structure to fill in.
    * @param \Drupal\Core\Form\FormStateInterface $form_state
    *   The complete state of the form.
+   * @param \Drupal\commerce_order\Entity\OrderInterface $order
+   *   The order that is associated with the registration.
    *
    * @return \Drupal\Core\Entity\EntityInterface
    *   The created person.

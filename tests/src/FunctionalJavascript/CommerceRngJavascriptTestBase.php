@@ -3,7 +3,6 @@
 namespace Drupal\Tests\commerce_rng\FunctionalJavascript;
 
 use Drupal\commerce_store\StoreCreationTrait;
-use Drupal\Component\Utility\Html;
 use Drupal\FunctionalJavascriptTests\DrupalSelenium2Driver;
 use Drupal\FunctionalJavascriptTests\JavascriptTestBase;
 use Drupal\Tests\commerce_rng\Traits\CommerceRngCommonTrait;

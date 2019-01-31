@@ -320,7 +320,7 @@ class RegistrantAddForm extends FormBase implements AjaxFormInterface, Registran
     $form += ['#parents' => []];
 
     // Check if we may use JS.
-    $use_js = $this->routeMatch->getParameter('js') == 'ajax' ? TRUE:FALSE;
+    $use_js = $this->routeMatch->getParameter('js') == 'ajax' ? TRUE : FALSE;
 
     $identity = $this->registrant->getIdentity();
 
@@ -422,7 +422,7 @@ class RegistrantAddForm extends FormBase implements AjaxFormInterface, Registran
     $element += ['#parents' => []];
 
     // Check if we may use JS.
-    $use_js = $this->routeMatch->getParameter('js') == 'ajax' ? TRUE:FALSE;
+    $use_js = $this->routeMatch->getParameter('js') == 'ajax' ? TRUE : FALSE;
 
     $element['people_list'] = [
       '#type' => 'table',

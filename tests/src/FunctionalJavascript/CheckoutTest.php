@@ -2,7 +2,6 @@
 
 namespace Drupal\Tests\commerce_rng\FunctionalJavascript;
 
-use Drupal\commerce_product\Entity\ProductInterface;
 use Drupal\commerce_order\Entity\Order;
 use Drupal\Core\Url;
 use Drupal\profile\Entity\Profile;

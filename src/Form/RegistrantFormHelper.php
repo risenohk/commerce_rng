@@ -43,7 +43,7 @@ class RegistrantFormHelper implements RegistrantFormHelperInterface {
    *   The entity type manager.
    * @param \Drupal\rng\EventManagerInterface $event_manager
    *   The event manager.
-   * @param \Drupal\commerce_rng\RegistrationDataInterface
+   * @param \Drupal\commerce_rng\RegistrationDataInterface $registration_data
    *   The registration data service.
    */
   public function __construct(EntityTypeManagerInterface $entity_type_manager, EventManagerInterface $event_manager, RegistrationDataInterface $registration_data) {
