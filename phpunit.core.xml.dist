@@ -38,20 +38,20 @@
   </php>
   <testsuites>
     <testsuite name="unit">
-      <file>./tests/TestSuites/UnitTestSuite.php</file>
+      <directory>../web/modules/commerce_rng/*/tests/src/Unit</directory>
+      <directory>../web/modules/commerce_rng/*/modules/*/tests/src/Unit</directory>
     </testsuite>
     <testsuite name="kernel">
-      <file>./tests/TestSuites/KernelTestSuite.php</file>
+      <directory>../web/modules/commerce_rng/*/tests/src/Kernel</directory>
+      <directory>../web/modules/commerce_rng/*/modules/*/tests/src/Kernel</directory>
     </testsuite>
     <testsuite name="functional">
-      <file>./tests/TestSuites/FunctionalTestSuite.php</file>
-    </testsuite>
-    <testsuite name="nonfunctional">
-      <file>./tests/TestSuites/UnitTestSuite.php</file>
-      <file>./tests/TestSuites/KernelTestSuite.php</file>
+      <directory>../web/modules/commerce_rng/*/tests/src/Functional</directory>
+      <directory>../web/modules/commerce_rng/*/modules/*/tests/src/Functional</directory>
     </testsuite>
     <testsuite name="functional-javascript">
-      <file>./tests/TestSuites/FunctionalJavascriptTestSuite.php</file>
+      <directory>../web/modules/commerce_rng/*/tests/src/FunctionalJavaScript</directory>
+      <directory>../web/modules/commerce_rng/*/modules/*/tests/src/FunctionalJavaScript</directory>
     </testsuite>
   </testsuites>
   <listeners>
