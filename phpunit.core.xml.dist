@@ -68,7 +68,6 @@
       <!-- By definition test classes have no tests. -->
       <exclude>
         <directory>../modules/commerce_rng/tests</directory>
-        <directory>../modules/commerce_rng/test_modules</directory>
       </exclude>
     </whitelist>
   </filter>
