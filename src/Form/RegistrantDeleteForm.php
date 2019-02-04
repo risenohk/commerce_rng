@@ -102,6 +102,17 @@ class RegistrantDeleteForm extends ContentEntityDeleteForm implements AjaxFormIn
   /**
    * {@inheritdoc}
    */
+  protected function getDeletionMessage() {
+    $identity = $this->entity->getIdentity();
+
+    return $this->t('The registration for %person has been deleted.', [
+      '%person' => $identity->label(),
+    ]);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getOrder() {
     return $this->order;
   }
