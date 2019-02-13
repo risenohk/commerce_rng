@@ -48,26 +48,6 @@ update_dependencies: &update_dependencies
         paths:
           - .
 
-# Run Drupal unit and kernel tests as one job. This command invokes the test.sh
-# hook.
-unit_kernel_tests: &unit_kernel_tests
-  <<: *defaults
-  steps:
-    - attach_workspace:
-        at: /var/www/html
-
-    - checkout
-
-    - run:
-        working_directory: /var/www/html
-        command: |
-          ./vendor/bin/phpunit -c core --group commerce_rng --testsuite unit,kernel --debug --verbose --log-junit artifacts/phpunit/phpunit.xml
-
-    - store_test_results:
-        path: /var/www/html/artifacts/phpunit
-    - store_artifacts:
-        path: /var/www/html/artifacts
-
 # Run Drupal functional and functional JS tests as one job. This command invokes
 # the test-functional.sh and test-functional-js hooks.
 functional_tests: &functional_tests
@@ -133,8 +113,6 @@ version: 2
 jobs:
   update-dependencies:
      <<: *update_dependencies
-  run-unit-kernel-tests:
-     <<: *unit_kernel_tests
   run-functional-tests:
      <<: *functional_tests
   run-code-sniffer:
@@ -149,9 +127,6 @@ workflows:
   test_and_lint:
     jobs:
       - update-dependencies
-      - run-unit-kernel-tests:
-          requires:
-            - update-dependencies
       - run-functional-tests:
           requires:
             - update-dependencies

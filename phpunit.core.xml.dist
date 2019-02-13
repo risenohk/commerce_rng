@@ -37,21 +37,15 @@
     <!-- Example for changing the driver args to webdriver tests MINK_DRIVER_ARGS_WEBDRIVER value: '["firefox", null, "http://localhost:4444/wd/hub"]' -->
   </php>
   <testsuites>
-    <testsuite name="unit">
-      <directory>../web/modules/commerce_rng/*/tests/src/Unit</directory>
-      <directory>../web/modules/commerce_rng/*/modules/*/tests/src/Unit</directory>
-    </testsuite>
-    <testsuite name="kernel">
-      <directory>../web/modules/commerce_rng/*/tests/src/Kernel</directory>
-      <directory>../web/modules/commerce_rng/*/modules/*/tests/src/Kernel</directory>
-    </testsuite>
     <testsuite name="functional">
-      <directory>../web/modules/commerce_rng/*/tests/src/Functional</directory>
-      <directory>../web/modules/commerce_rng/*/modules/*/tests/src/Functional</directory>
+      <file>./tests/TestSuites/FunctionalTestSuite.php</file>
+    </testsuite>
+    <testsuite name="nonfunctional">
+      <file>./tests/TestSuites/UnitTestSuite.php</file>
+      <file>./tests/TestSuites/KernelTestSuite.php</file>
     </testsuite>
     <testsuite name="functional-javascript">
-      <directory>../web/modules/commerce_rng/*/tests/src/FunctionalJavaScript</directory>
-      <directory>../web/modules/commerce_rng/*/modules/*/tests/src/FunctionalJavaScript</directory>
+      <file>./tests/TestSuites/FunctionalJavascriptTestSuite.php</file>
     </testsuite>
   </testsuites>
   <listeners>
