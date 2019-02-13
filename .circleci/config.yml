@@ -136,4 +136,3 @@ workflows:
       - run-code-coverage:
           requires:
             - update-dependencies
-            - run-unit-kernel-tests
