@@ -44,12 +44,12 @@ update_dependencies: &update_dependencies
     - run:
         working_directory: /var/www/html/modules/contrib/commerce
         command: |
-          patch -p1 < /var/www/html/modules/commerce_rng/commerce-checkout-pane-guest-registration-2857157-88.patch
+          patch -p1 < /var/www/html/modules/commerce_rng/patches/commerce-checkout-pane-guest-registration-2857157-88.patch
 
     - run:
         working_directory: /var/www/html/modules/contrib/rng
         command: |
-          patch -p1 < /var/www/html/modules/commerce_rng/rng-152-event-type-get-identity-type-entity-form-mode.patch
+          patch -p1 < /var/www/html/modules/commerce_rng/patches/rng-152-event-type-get-identity-type-entity-form-mode.patch
 
     - save_cache: *save_cache
 
