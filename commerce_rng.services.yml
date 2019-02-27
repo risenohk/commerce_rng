@@ -2,7 +2,7 @@ services:
   # RNG.
   commerce_rng.registration_data:
     class: Drupal\commerce_rng\RegistrationData
-    arguments: ['@entity_type.manager', '@entity.query', '@rng.event_manager']
+    arguments: ['@entity_type.manager', '@rng.event_manager']
   commerce_rng.registrant_form:
     class: Drupal\commerce_rng\Form\RegistrantFormHelper
     arguments: ['@entity_type.manager', '@rng.event_manager', '@commerce_rng.registration_data']

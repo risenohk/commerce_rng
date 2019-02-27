@@ -7,7 +7,6 @@ use Drupal\commerce_order\Entity\OrderItemInterface;
 use Drupal\commerce_product\Entity\ProductVariationType;
 use Drupal\commerce_product\Entity\ProductVariationInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\Entity\Query\QueryFactory;
 use Drupal\rng\EventManagerInterface;
 use Drupal\rng\RegistrationInterface;
 
@@ -17,21 +16,7 @@ use Drupal\rng\RegistrationInterface;
 class RegistrationData implements RegistrationDataInterface {
 
   /**
-   * The entity type manager.
-   *
-   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
-   */
-  protected $entityTypeManager;
-
-  /**
-   * The factory for querying entities.
-   *
-   * @var \Drupal\Core\Entity\Query\QueryFactory
-   */
-  protected $queryFactory;
-
-  /**
-   * The event manager.
+   * The RNG event manager.
    *
    * @var \Drupal\rng\EventManagerInterface
    */
@@ -42,28 +27,27 @@ class RegistrationData implements RegistrationDataInterface {
    *
    * @var \Drupal\Core\Entity\EntityStorageInterface
    */
-  protected $registrationManager;
+  protected $registrationStorage;
 
   /**
    * The registrant manager.
    *
    * @var \Drupal\Core\Entity\EntityStorageInterface
    */
-  protected $registrantManager;
+  protected $registrantStorage;
 
   /**
-   * RegistrationData object constructor.
+   * Constructs a new RegistrationData object.
+   *
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
+   *   The entity type manager.
+   * @param \Drupal\rng\EventManagerInterface $event_manager
+   *   The RNG event manager.
    */
-  public function __construct(
-    EntityTypeManagerInterface $entity_type_manager,
-    QueryFactory $query_factory,
-    EventManagerInterface $event_manager
-  ) {
-    $this->entityTypeManager = $entity_type_manager;
-    $this->queryFactory = $query_factory;
+  public function __construct(EntityTypeManagerInterface $entity_type_manager, EventManagerInterface $event_manager) {
+    $this->registrationStorage = $entity_type_manager->getStorage('registration');
+    $this->registrantStorage = $entity_type_manager->getStorage('registrant');
     $this->eventManager = $event_manager;
-    $this->registrationManager = $this->entityTypeManager->getStorage('registration');
-    $this->registrantManager = $this->entityTypeManager->getStorage('registrant');
   }
 
   /**
@@ -79,12 +63,12 @@ class RegistrationData implements RegistrationDataInterface {
     }
 
     // Get all registrations referring these order id's.
-    $registration_ids = $this->queryFactory->get('registration')
+    $registration_ids = $this->registrationStorage->getQuery()
       ->condition('field_order_item', $order_item_ids, 'IN')
       ->execute();
     krsort($registration_ids);
 
-    $registrations = $this->registrationManager->loadMultiple($registration_ids);
+    $registrations = $this->registrationStorage->loadMultiple($registration_ids);
     return $registrations;
   }
 
@@ -93,13 +77,13 @@ class RegistrationData implements RegistrationDataInterface {
    */
   public function getRegistrationByOrderItemId($order_item_id) {
     // Get all registrations referring these order id's.
-    $registration_ids = $this->queryFactory->get('registration')
+    $registration_ids = $this->registrationStorage->getQuery()
       ->condition('field_order_item', $order_item_id)
       ->execute();
 
     if (!empty($registration_ids)) {
       $registration_id = reset($registration_ids);
-      return $this->registrationManager->load($registration_id);
+      return $this->registrationStorage->load($registration_id);
     }
   }
 
@@ -239,7 +223,7 @@ class RegistrationData implements RegistrationDataInterface {
         ->condition('registration', $registration->id())
         ->execute();
 
-      $registrants = $this->registrantManager->loadMultiple($registrant_ids);
+      $registrants = $this->registrantStorage->loadMultiple($registrant_ids);
 
       foreach ($registrants as $registrant) {
         $registrant_id = $registrant->id();
