@@ -1,6 +1,6 @@
 # Commerce RNG
 
-[![Build Status](https://travis-ci.org/MegaChriz/commerce_rng.svg?branch=8.x-1.x)](https://travis-ci.org/MegaChriz/afasprofit)
+[![CircleCI](https://circleci.com/gh/MegaChriz/commerce_rng/tree/8.x-1.x.svg?style=svg)](https://circleci.com/gh/MegaChriz/commerce_rng/tree/8.x-1.x)
 
 This is an example implementation of how an integration between RNG and Commerce
 could work.
