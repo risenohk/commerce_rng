@@ -25,8 +25,8 @@ services:
     arguments: ['@rng.event_manager']
     tags:
       - { name: commerce.availability_checker, priority: 0 }
-  commerce_rng.account_create:
-    class: Drupal\commerce_rng\EventSubscriber\AccountCreate
+  commerce_rng.checkout_completion_register_event_subscriber:
+    class: Drupal\commerce_rng\EventSubscriber\CheckoutCompletionRegisterEventSubscriber
     tags:
       - {name: event_subscriber}
 

@@ -2,7 +2,7 @@
 
 namespace Drupal\commerce_rng\EventSubscriber;
 
-use Drupal\commerce_checkout\Event\CheckoutAccountCreateEvent;
+use Drupal\commerce_checkout\Event\CheckoutCompletionRegisterEvent;
 use Drupal\commerce_checkout\Event\CheckoutEvents;
 use Drupal\user\EntityOwnerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -10,7 +10,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 /**
  * Event subscriber for acting upon account creation during checkout.
  */
-class AccountCreate implements EventSubscriberInterface {
+class CheckoutCompletionRegisterEventSubscriber implements EventSubscriberInterface {
 
   /**
    * {@inheritdoc}
@@ -18,12 +18,9 @@ class AccountCreate implements EventSubscriberInterface {
   public static function getSubscribedEvents() {
     $events = [];
 
-    // As of Commerce 8.x-2.8, the availability of the referenced class and
-    // constant depends on the patch
-    // "commerce-checkout-pane-guest-registration-2857157-88.patch" being
-    // applied to Commerce.
-    if (class_exists('Drupal\commerce_checkout\Event\CheckoutEvents') && defined('Drupal\commerce_checkout\Event\CheckoutEvents::ACCOUNT_CREATE')) {
-      $events[CheckoutEvents::ACCOUNT_CREATE][] = 'checkoutComplete';
+    // The class is only available since Commerce 8.x-2.12.
+    if (class_exists('Drupal\commerce_checkout\Event\CheckoutEvents') && defined('Drupal\commerce_checkout\Event\CheckoutEvents::COMPLETION_REGISTER')) {
+      $events[CheckoutEvents::COMPLETION_REGISTER][] = 'checkoutComplete';
     }
 
     return $events;
@@ -35,10 +32,10 @@ class AccountCreate implements EventSubscriberInterface {
    * Loops through all registrants for an order and sets owner on the
    * registrant's persons.
    *
-   * @param \Drupal\commerce_checkout\Event\CheckoutAccountCreateEvent $event
-   *   The account create event.
+   * @param \Drupal\commerce_checkout\Event\CheckoutCompletionRegisterEvent $event
+   *   The completion register event.
    */
-  public function checkoutComplete(CheckoutAccountCreateEvent $event) {
+  public function checkoutComplete(CheckoutCompletionRegisterEvent $event) {
     /** @var \Drupal\Core\Session\AccountInterface $account */
     $account = $event->getAccount();
 

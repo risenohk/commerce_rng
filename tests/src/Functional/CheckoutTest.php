@@ -178,12 +178,11 @@ class CheckoutTest extends CommerceRngBrowserTestBase {
    * then become the owner of the person entity when it creates an account at
    * the end of the process.
    *
-   * Requires the following patch:
-   * https://www.drupal.org/files/issues/2018-07-06/commerce-checkout-pane-guest-registration-2857157-88.patch
+   * Requires Commerce 2.12.
    */
   public function testNewPersonsOwnershipNewCustomers() {
-    if (!class_exists('Drupal\commerce_checkout\Event\CheckoutEvents') || !defined('Drupal\commerce_checkout\Event\CheckoutEvents::ACCOUNT_CREATE')) {
-      $this->markTestSkipped("The patch 'commerce-checkout-pane-guest-registration-2857157-88.patch' has not been applied to Commerce.");
+    if (!class_exists('Drupal\commerce_checkout\Event\CheckoutEvents') || !defined('Drupal\commerce_checkout\Event\CheckoutEvents::COMPLETION_REGISTER')) {
+      $this->markTestSkipped("This test requires Commerce 2.12.");
     }
 
     // Enable the completion_registration pane.
