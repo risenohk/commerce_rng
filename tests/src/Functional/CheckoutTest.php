@@ -185,7 +185,7 @@ class CheckoutTest extends CommerceRngBrowserTestBase {
       $this->markTestSkipped("This test requires Commerce 2.12.");
     }
 
-    // Enable the completion_registration pane.
+    // Enable the completion_register pane.
     /** @var \Drupal\commerce_checkout\Entity\CheckoutFlowInterface $checkout_flow */
     $checkout_flow = $this->container
       ->get('entity_type.manager')
@@ -194,11 +194,11 @@ class CheckoutTest extends CommerceRngBrowserTestBase {
     /** @var \Drupal\commerce_checkout\Plugin\Commerce\CheckoutFlow\CheckoutFlowInterface $checkout_flow_plugin */
     $checkout_flow_plugin = $checkout_flow->getPlugin();
     /** @var \Drupal\commerce_checkout\Plugin\Commerce\CheckoutPane\CompletionRegistration $pane */
-    $pane = $checkout_flow_plugin->getPane('completion_registration');
+    $pane = $checkout_flow_plugin->getPane('completion_register');
     $pane->setConfiguration([]);
     $pane->setStepId('complete');
     $checkout_flow_plugin_configuration = $checkout_flow_plugin->getConfiguration();
-    $checkout_flow_plugin_configuration['panes']['completion_registration'] = $pane->getConfiguration();
+    $checkout_flow_plugin_configuration['panes']['completion_register'] = $pane->getConfiguration();
     $checkout_flow_plugin->setConfiguration($checkout_flow_plugin_configuration);
     $checkout_flow->save();
 
@@ -234,13 +234,13 @@ class CheckoutTest extends CommerceRngBrowserTestBase {
     $this->assertSession()->pageTextContains('Your order number is 1. You can view your order on your account page when logged in.');
     $this->assertSession()->pageTextContains('0 items');
 
-    // Assert that the completion_registration checkout pane is shown.
+    // Assert that the completion_register checkout pane is shown.
     $this->assertSession()->pageTextContains('Create an account?');
     // Register.
     $this->submitForm([
-      'completion_registration[register][name]' => 'User name',
-      'completion_registration[register][password][pass1]' => 'pass',
-      'completion_registration[register][password][pass2]' => 'pass',
+      'completion_register[register][name]' => 'User name',
+      'completion_register[register][password][pass1]' => 'pass',
+      'completion_register[register][password][pass2]' => 'pass',
     ], 'Create my account');
     // Assert that the account was created successfully.
     $this->assertSession()->pageTextContains('Registration successful. You are now logged in.');
