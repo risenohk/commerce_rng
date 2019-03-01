@@ -235,13 +235,13 @@ class CheckoutTest extends CommerceRngBrowserTestBase {
     $this->assertSession()->pageTextContains('0 items');
 
     // Assert that the completion_register checkout pane is shown.
-    $this->assertSession()->pageTextContains('Create an account?');
+    $this->assertSession()->pageTextContains('Create your account');
     // Register.
     $this->submitForm([
-      'completion_register[register][name]' => 'User name',
-      'completion_register[register][password][pass1]' => 'pass',
-      'completion_register[register][password][pass2]' => 'pass',
-    ], 'Create my account');
+      'completion_register[name]' => 'User name',
+      'completion_register[pass][pass1]' => 'pass',
+      'completion_register[pass][pass2]' => 'pass',
+    ], 'Create account');
     // Assert that the account was created successfully.
     $this->assertSession()->pageTextContains('Registration successful. You are now logged in.');
 
