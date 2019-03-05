@@ -20,6 +20,11 @@ It makes the following assumptions:
 4. The customer completes checkout.
 
 
+## Requirements
+- Commerce 8.x-2.12 or later.
+- RNG 8.x-1.5 or later with a patch applied (see section "Patches" below).
+
+
 ## Patches
 
 When using RNG 8.x-1.5 (the latest release at the time of writing), you'll need
