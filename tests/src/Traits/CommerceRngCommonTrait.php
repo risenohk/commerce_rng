@@ -27,6 +27,10 @@ trait CommerceRngCommonTrait {
       'administer commerce_currency',
       'administer commerce_store',
       'administer commerce_store_type',
+      'create person profile',
+      'update own person profile',
+      'view own person profile',
+      'delete own person profile',
     ];
   }
 
