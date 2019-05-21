@@ -382,7 +382,7 @@ class RegistrantAddForm extends FormBase implements AjaxFormInterface, Registran
     $actions['submit'] = $this->saveButton($form, $form_state);
 
     if (!$this->registrant->isNew() && $this->registrant->hasLinkTemplate('delete-form')) {
-      $route_info = $this->registrant->urlInfo('delete-form');
+      $route_info = $this->registrant->toUrl('delete-form');
       if ($this->getRequest()->query->has('destination')) {
         $query = $route_info->getOption('query');
         $query['destination'] = $this->getRequest()->query->get('destination');

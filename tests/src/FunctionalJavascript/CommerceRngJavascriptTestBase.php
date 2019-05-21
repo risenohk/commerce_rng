@@ -4,14 +4,14 @@ namespace Drupal\Tests\commerce_rng\FunctionalJavascript;
 
 use Drupal\commerce_store\StoreCreationTrait;
 use Drupal\FunctionalJavascriptTests\DrupalSelenium2Driver;
-use Drupal\FunctionalJavascriptTests\JavascriptTestBase;
+use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
+use Drupal\Tests\block\Traits\BlockCreationTrait;
 use Drupal\Tests\commerce_rng\Traits\CommerceRngCommonTrait;
-use Drupal\simpletest\BlockCreationTrait;
 
 /**
  * Base class for Commerce RNG javascript tests.
  */
-abstract class CommerceRngJavascriptTestBase extends JavascriptTestBase {
+abstract class CommerceRngJavascriptTestBase extends WebDriverTestBase {
 
   use BlockCreationTrait;
   use StoreCreationTrait;
@@ -29,13 +29,6 @@ abstract class CommerceRngJavascriptTestBase extends JavascriptTestBase {
     'commerce_store',
     'commerce_rng',
   ];
-
-  /**
-   * {@inheritdoc}
-   *
-   * Do not use PhantomJS.
-   */
-  protected $minkDefaultDriverClass = DrupalSelenium2Driver::class;
 
   /**
    * The store entity.
