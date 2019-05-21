@@ -175,7 +175,7 @@ class RegistrantFormHelper implements RegistrantFormHelperInterface {
     $form += ['#parents' => []];
 
     // Registrant form.
-    $display = $this->entity_type_manager->getStorage('entity_form_display')
+    $display = $this->entityTypeManager->getStorage('entity_form_display')
       ->load('registrant.' . $registrant->bundle() . '.default');
     $display->buildForm($registrant, $form, $form_state);
     $form_state->set('registrant__form_display', $display);
@@ -241,7 +241,7 @@ class RegistrantFormHelper implements RegistrantFormHelperInterface {
       ->getEventType()
       ->getIdentityTypeEntityFormMode($person->getEntityTypeId(), $person->bundle());
 
-    $display = $this->entity_type_manager->getStorage('entity_form_display')
+    $display = $this->entityTypeManager->getStorage('entity_form_display')
       ->load($person->getEntityTypeId() . '.' . $person->bundle() . '.' . $form_mode);
     $display->buildForm($person, $form, $form_state);
     $form_state->set('person__form_display', $display);
