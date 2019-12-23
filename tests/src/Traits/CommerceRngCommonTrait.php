@@ -74,7 +74,7 @@ trait CommerceRngCommonTrait {
     // Update entity info.
     $entity = $this->container
       ->get('entity_type.manager')
-      ->getStorage('event_type')
+      ->getStorage('rng_event_type')
       ->load('commerce_product.event');
     $entity->setIdentityTypeReference('profile', 'person', TRUE);
     $entity->setIdentityTypeCreate('profile', 'person', TRUE);

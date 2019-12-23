@@ -2,7 +2,7 @@ langcode: en
 status: true
 dependencies:
   config:
-    - rng.event_type.commerce_product.event
+    - rng.rng_event_type.commerce_product.event
 id: commerce_product.event.event_manager
 entity_type: commerce_product
 bundle: event
