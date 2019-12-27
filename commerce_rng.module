@@ -82,29 +82,6 @@ function commerce_rng_commerce_rng_persons_list_alter(array &$persons, OrderInte
  ******************************************************************************/
 
 /**
- * Implements hook_form_FORM_ID_alter() for form 'views_form_commerce_cart_form_default'.
- *
- * Disables quantity field for event products.
- */
-function commerce_rng_form_views_form_commerce_cart_form_default_alter(&$form, FormStateInterface $form_state) {
-  /** @var \Drupal\commerce_rng\RegistrationDataInterface $registration_data */
-  $registration_data = \Drupal::service('commerce_rng.registration_data');
-
-  $result = $form_state->getBuildInfo()['args'][0]->result;
-  /** @var \Drupal\views\ResultRow $row */
-  foreach ($result as $index => $row) {
-    if (isset($row->_relationship_entities['order_items']) && $row->_relationship_entities['order_items'] instanceof OrderItemInterface) {
-      /** @var \Drupal\commerce_product\Entity\ProductInterface|null $product */
-      $product = $registration_data->orderItemGetEvent($row->_relationship_entities['order_items']);
-      if ($product) {
-        $form['edit_quantity'][$index]['#type'] = 'item';
-        $form['edit_quantity'][$index]['#markup'] = $form['edit_quantity'][$index]['#default_value'];
-      }
-    }
-  }
-}
-
-/**
  * Implements hook_form_FORM_ID_alter() for form 'commerce_order_event_edit_form'.
  *
  * @todo update
