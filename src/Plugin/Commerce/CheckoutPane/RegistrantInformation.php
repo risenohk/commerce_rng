@@ -356,6 +356,8 @@ class RegistrantInformation extends CheckoutPaneBase implements IsPaneCompleteIn
         // Create a new registration.
         $registration = $this->createRegistration($product);
         $registration->field_order_item = $order_item_id;
+        $registration->setRegistrantQty($order_item->getQuantity());
+        $registration->setConfirmed(FALSE);
         $registration->save();
       }
 

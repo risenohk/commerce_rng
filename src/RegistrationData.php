@@ -167,15 +167,10 @@ class RegistrationData implements RegistrationDataInterface {
    *   The order item to update.
    */
   public function orderItemUpdateQuantity(OrderItemInterface $order_item) {
-    return; // we want to select qty, then fill in users
     $registration = $this->getRegistrationByOrderItemId($order_item->id());
     if ($registration) {
-      $quantity = count($registration->getRegistrantIds());
-      $order_item->setQuantity($quantity);
-    }
-    elseif ($this->orderItemGetEvent($order_item)) {
-      // If no registration for this item is known, the quantity is always one.
-      $order_item->setQuantity(1);
+      $registration->setRegistrantQty($order_item->getQuantity());
+      $registration->save();
     }
   }
 
