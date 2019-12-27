@@ -113,7 +113,7 @@ class RegistrantFormHelper implements RegistrantFormHelperInterface {
    * @param \Drupal\rng\RegistrantInterface $registrant
    *   A registrant entity.
    *
-   * @return \Drupal\commerce\Entity\OrderInterface
+   * @return \Drupal\commerce_order\Entity\OrderInterface
    *   The order entity.
    */
   protected function getOrder(RegistrantInterface $registrant) {

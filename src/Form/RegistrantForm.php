@@ -4,7 +4,7 @@ namespace Drupal\commerce_rng\Form;
 
 use Drupal\Component\Datetime\TimeInterface;
 use Drupal\Core\Entity\ContentEntityForm;
-use Drupal\Core\Entity\EntityManagerInterface;
+use Drupal\Core\Entity\EntityRepositoryInterface;
 use Drupal\Core\Entity\EntityTypeBundleInfoInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Form\FormStateInterface;
@@ -43,8 +43,8 @@ class RegistrantForm extends ContentEntityForm implements AjaxFormInterface, Reg
   /**
    * Constructs a new RegistrantForm.
    *
-   * @param \Drupal\Core\Entity\EntityManagerInterface $entity_manager
-   *   The entity manager.
+   * @param \Drupal\Core\Entity\EntityRepositoryInterface $entity_repository
+   *   The entity repository.
    * @param \Drupal\Core\Entity\EntityTypeBundleInfoInterface $entity_type_bundle_info
    *   The entity type bundle service.
    * @param \Drupal\Component\Datetime\TimeInterface $time
@@ -57,14 +57,14 @@ class RegistrantForm extends ContentEntityForm implements AjaxFormInterface, Reg
    *   Helper class for generating registrant forms.
    */
   public function __construct(
-    EntityManagerInterface $entity_manager,
+    EntityRepositoryInterface $entity_repository,
     EntityTypeBundleInfoInterface $entity_type_bundle_info,
     TimeInterface $time,
     ModuleHandlerInterface $module_handler,
     RouteMatchInterface $route_match,
     RegistrantFormHelperInterface $registrant_form_helper
   ) {
-    parent::__construct($entity_manager, $entity_type_bundle_info, $time);
+    parent::__construct($entity_repository, $entity_type_bundle_info, $time);
 
     $this->setModuleHandler($module_handler);
     $this->routeMatch = $route_match;
