@@ -3,6 +3,7 @@
 namespace Drupal\commerce_rng\Form;
 
 use Drupal\commerce_product\Entity\ProductVariationType;
+use Drupal\Core\Config\ConfigFactory;
 use Drupal\rng\Entity\Group;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Form\FormStateInterface;
@@ -48,6 +49,11 @@ class EventCommerceForm extends FormBase {
   protected $redirectDestination;
 
   /**
+   * @var \Drupal\Core\Config\ConfigFactory
+   */
+  protected $configFactory;
+
+  /**
    * The event entity.
    *
    * @var \Drupal\Core\Entity\EntityInterface
@@ -65,12 +71,15 @@ class EventCommerceForm extends FormBase {
    *   The RNG event manager.
    * @param \Drupal\Core\Routing\RedirectDestinationInterface $redirect_destination
    *   The redirect destination service.
+   * @param \Drupal\Core\Config\ConfigFactory $configFactory
+   *   The Config Factory service.
    */
-  public function __construct(ActionManager $actionManager, ConditionManager $conditionManager, EventManagerInterface $event_manager, RedirectDestinationInterface $redirect_destination) {
+  public function __construct(ActionManager $actionManager, ConditionManager $conditionManager, EventManagerInterface $event_manager, RedirectDestinationInterface $redirect_destination, ConfigFactory $configFactory) {
     $this->actionManager = $actionManager;
     $this->conditionManager = $conditionManager;
     $this->eventManager = $event_manager;
     $this->redirectDestination = $redirect_destination;
+    $this->configFactory = $configFactory;
   }
 
   /**
@@ -81,7 +90,8 @@ class EventCommerceForm extends FormBase {
       $container->get('plugin.manager.action'),
       $container->get('plugin.manager.condition'),
       $container->get('rng.event_manager'),
-      $container->get('redirect.destination')
+      $container->get('redirect.destination'),
+      $container->get('config.factory')
     );
   }
 
@@ -107,7 +117,7 @@ class EventCommerceForm extends FormBase {
       '#value' => $event_type_id,
     ];
 
-    $config = \Drupal::getContainer()->get('config.factory')->getEditable('commerce_rng.settings');
+    $config = $this->configFactory->getEditable('commerce_rng.settings');
     $default_values = unserialize($config->get($event_type_id));
     if ($config->get($event_type_id . ':integrate')) {
       $header = [
@@ -180,7 +190,7 @@ class EventCommerceForm extends FormBase {
     $event_type_id = $form_state->getValue('event_type_id');
     $values = serialize($form_state->getValue('table'));
 
-    $config = \Drupal::getContainer()->get('config.factory')->getEditable('commerce_rng.settings');
+    $config = $this->configFactory->getEditable('commerce_rng.settings');
     $config->set($event_type_id, $values)->save();
   }
 

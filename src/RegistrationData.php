@@ -8,7 +8,7 @@ use Drupal\commerce_product\Entity\ProductVariationType;
 use Drupal\commerce_product\Entity\ProductVariationInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\rng\EventManagerInterface;
-use Drupal\rng\RegistrationInterface;
+use Drupal\rng\Entity\RegistrationInterface;
 
 /**
  * Service for managing registration data.
@@ -169,19 +169,15 @@ class RegistrationData implements RegistrationDataInterface {
   public function orderItemUpdateQuantity(OrderItemInterface $order_item) {
     $registration = $this->getRegistrationByOrderItemId($order_item->id());
     if ($registration) {
-      $quantity = count($registration->getRegistrantIds());
-      $order_item->setQuantity($quantity);
-    }
-    elseif ($this->orderItemGetEvent($order_item)) {
-      // If no registration for this item is known, the quantity is always one.
-      $order_item->setQuantity(1);
+      $registration->setRegistrantQty($order_item->getQuantity());
+      $registration->save();
     }
   }
 
   /**
    * Formats registration data in a simple format.
    *
-   * @param \Drupal\rng\RegistrationInterface[] $registrations
+   * @param \Drupal\rng\Entity\RegistrationInterface[] $registrations
    *   A list of registrations.
    *
    * @return array

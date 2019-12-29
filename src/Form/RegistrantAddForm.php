@@ -74,14 +74,14 @@ class RegistrantAddForm extends FormBase implements AjaxFormInterface, Registran
   /**
    * The registration to add the registrant to.
    *
-   * @var \Drupal\rng\RegistrationInterface
+   * @var \Drupal\rng\Entity\RegistrationInterface
    */
   protected $registration;
 
   /**
    * The registrant to add.
    *
-   * @var \Drupal\rng\RegistrantInterface
+   * @var \Drupal\rng\Entity\RegistrantInterface
    */
   protected $registrant;
 
