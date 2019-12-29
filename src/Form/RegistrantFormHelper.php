@@ -8,7 +8,7 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\rng\EventManagerInterface;
-use Drupal\rng\RegistrantInterface;
+use Drupal\rng\Entity\RegistrantInterface;
 
 /**
  * Helper class for building registrant forms.
@@ -82,7 +82,7 @@ class RegistrantFormHelper implements RegistrantFormHelperInterface {
   /**
    * Returns the event entity.
    *
-   * @param \Drupal\rng\RegistrantInterface $registrant
+   * @param \Drupal\rng\Entity\RegistrantInterface $registrant
    *   A registrant entity.
    *
    * @return \Drupal\Core\Entity\EntityInterface
@@ -110,7 +110,7 @@ class RegistrantFormHelper implements RegistrantFormHelperInterface {
   /**
    * Returns the order to which the registrant belongs.
    *
-   * @param \Drupal\rng\RegistrantInterface $registrant
+   * @param \Drupal\rng\Entity\RegistrantInterface $registrant
    *   A registrant entity.
    *
    * @return \Drupal\commerce_order\Entity\OrderInterface
@@ -149,7 +149,7 @@ class RegistrantFormHelper implements RegistrantFormHelperInterface {
   /**
    * Creates a new person for the registrant.
    *
-   * @param \Drupal\rng\RegistrantInterface $registrant
+   * @param \Drupal\rng\Entity\RegistrantInterface $registrant
    *   The registrant to create a person for.
    *
    * @todo make protected.

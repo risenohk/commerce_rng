@@ -20,7 +20,7 @@ interface RegistrantFormInterface extends FormInterface {
   /**
    * Returns the registrant that is being edited.
    *
-   * @return \Drupal\rng\RegistrantInterface
+   * @return \Drupal\rng\Entity\RegistrantInterface
    *   A registrant.
    */
   public function getRegistrant();

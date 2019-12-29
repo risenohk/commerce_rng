@@ -5,7 +5,7 @@ namespace Drupal\commerce_rng\Form;
 use Drupal\commerce_order\Entity\OrderInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\rng\RegistrantInterface;
+use Drupal\rng\Entity\RegistrantInterface;
 
 /**
  * Interface for building registrant forms.
@@ -19,7 +19,7 @@ interface RegistrantFormHelperInterface {
    *   The form structure to fill in.
    * @param \Drupal\Core\Form\FormStateInterface $form_state
    *   The complete state of the form.
-   * @param \Drupal\rng\RegistrantInterface $registrant
+   * @param \Drupal\rng\Entity\RegistrantInterface $registrant
    *   The registrant to build the form for.
    *
    * @return array
@@ -35,7 +35,7 @@ interface RegistrantFormHelperInterface {
    * @param \Drupal\Core\Form\FormStateInterface $form_state
    *   The complete state of the form.
    *
-   * @return \Drupal\rng\RegistrantInterface
+   * @return \Drupal\rng\Entity\RegistrantInterface
    *   The created registrant.
    */
   public function submitRegistrantForm(array &$form, FormStateInterface $form_state);
@@ -47,7 +47,7 @@ interface RegistrantFormHelperInterface {
    *   The form structure to fill in.
    * @param \Drupal\Core\Form\FormStateInterface $form_state
    *   The complete state of the form.
-   * @param \Drupal\rng\RegistrantInterface $registrant
+   * @param \Drupal\rng\Entity\RegistrantInterface $registrant
    *   The registrant to build the form for.
    *
    * @return array

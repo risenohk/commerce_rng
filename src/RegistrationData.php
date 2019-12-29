@@ -8,7 +8,7 @@ use Drupal\commerce_product\Entity\ProductVariationType;
 use Drupal\commerce_product\Entity\ProductVariationInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\rng\EventManagerInterface;
-use Drupal\rng\RegistrationInterface;
+use Drupal\rng\Entity\RegistrationInterface;
 
 /**
  * Service for managing registration data.
@@ -177,7 +177,7 @@ class RegistrationData implements RegistrationDataInterface {
   /**
    * Formats registration data in a simple format.
    *
-   * @param \Drupal\rng\RegistrationInterface[] $registrations
+   * @param \Drupal\rng\Entity\RegistrationInterface[] $registrations
    *   A list of registrations.
    *
    * @return array

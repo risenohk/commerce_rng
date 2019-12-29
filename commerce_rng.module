@@ -11,8 +11,8 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Link;
 use Drupal\Core\Url;
 use Drupal\profile\Entity\ProfileInterface;
-use Drupal\rng\RegistrantInterface;
-use Drupal\rng\RegistrationInterface;
+use Drupal\rng\Entity\RegistrantInterface;
+use Drupal\rng\Entity\RegistrationInterface;
 
 /*******************************************************************************
  * ENTITY HOOKS

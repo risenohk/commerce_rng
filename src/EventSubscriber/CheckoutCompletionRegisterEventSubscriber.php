@@ -58,11 +58,11 @@ class CheckoutCompletionRegisterEventSubscriber implements EventSubscriberInterf
     $account = $event->getAccount();
 
     // Assign persons used as registrant to account.
-    /** @var \Drupal\rng\RegistrationInterface[] $registrations */
+    /** @var \Drupal\rng\Entity\RegistrationInterface[] $registrations */
     $registrations = \Drupal::service('commerce_rng.registration_data')->getOrderRegistrations($event->getOrder());
     foreach ($registrations as $registration) {
       $registrants = $registration->getRegistrants();
-      /** @var \Drupal\rng\RegistrantInterface $registrant */
+      /** @var \Drupal\rng\Entity\RegistrantInterface $registrant */
       foreach ($registrants as $registrant) {
         $person = $registrant->getIdentity();
         if ($person instanceof EntityOwnerInterface && !$person->getOwnerId()) {
