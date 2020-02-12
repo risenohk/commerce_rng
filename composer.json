@@ -6,7 +6,7 @@
     "license": "GPL-2.0+",
     "require": {
         "drupal/core": "~8.6",
-        "drupal/rng": "^1.5",
+        "drupal/rng": "^2.0",
         "drupal/commerce": "^2.12"
     },
     "require-dev": {
@@ -18,12 +18,5 @@
         "phpmetrics/phpmetrics": "^2.4",
         "drupal/token": "^1.5"
     },
-    "minimum-stability": "dev",
-    "extra": {
-        "patches": {
-            "drupal/rng": {
-                "Identity form mode": "patches/rng-152-event-type-get-identity-type-entity-form-mode.patch"
-            }
-        }
-    }
+    "minimum-stability": "dev"
 }
