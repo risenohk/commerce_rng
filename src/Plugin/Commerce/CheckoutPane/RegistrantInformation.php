@@ -7,10 +7,12 @@ use Drupal\commerce_checkout\Plugin\Commerce\CheckoutPane\CheckoutPaneBase;
 use Drupal\commerce_order\Entity\OrderItemInterface;
 use Drupal\commerce_product\Entity\ProductVariationInterface;
 use Drupal\Component\Serialization\Json;
+use Drupal\Core\Entity\EntityFormBuilderInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Extension\ModuleHandler;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Render\Element\Form;
 use Drupal\Core\Routing\RedirectDestinationInterface;
 use Drupal\Core\Url;
 use Drupal\rng\EventManagerInterface;
@@ -79,6 +81,11 @@ class RegistrantInformation extends CheckoutPaneBase implements IsPaneCompleteIn
   protected $registrationData;
 
   /**
+   * @var \Drupal\Core\Entity\EntityFormBuilderInterface
+   */
+  protected $entityFormBuilder;
+
+  /**
    * Constructs a new RegistrantInformation object.
    *
    * @param array $configuration
@@ -103,6 +110,8 @@ class RegistrantInformation extends CheckoutPaneBase implements IsPaneCompleteIn
    *   Helper class for generating registrant forms.
    * @param \Drupal\commerce_rng\RegistrationDataInterface $registration_data
    *   Object for working with registration data.
+   * @param \Drupal\Core\Entity\EntityFormBuilderInterface $entity_form_builder
+   *   Entity FormBuilder service.
    */
   public function __construct(
     array $configuration,
@@ -115,7 +124,8 @@ class RegistrantInformation extends CheckoutPaneBase implements IsPaneCompleteIn
     EventManagerInterface $event_manager,
     RegistrantFactoryInterface $registrant_factory,
     RegistrantFormHelperInterface $registrant_form_helper,
-    RegistrationDataInterface $registration_data
+    RegistrationDataInterface $registration_data,
+    EntityFormBuilderInterface $entity_form_builder
   ) {
     parent::__construct($configuration, $plugin_id, $plugin_definition, $checkout_flow, $entity_type_manager);
 
@@ -125,6 +135,7 @@ class RegistrantInformation extends CheckoutPaneBase implements IsPaneCompleteIn
     $this->registrantFactory = $registrant_factory;
     $this->registrantFormHelper = $registrant_form_helper;
     $this->registrationData = $registration_data;
+    $this->entityFormBuilder = $entity_form_builder;
   }
 
   /**
@@ -142,7 +153,8 @@ class RegistrantInformation extends CheckoutPaneBase implements IsPaneCompleteIn
       $container->get('rng.event_manager'),
       $container->get('rng.registrant.factory'),
       $container->get('commerce_rng.registrant_form'),
-      $container->get('commerce_rng.registration_data')
+      $container->get('commerce_rng.registration_data'),
+      $container->get('entity.form_builder')
     );
   }
 
@@ -370,6 +382,7 @@ class RegistrantInformation extends CheckoutPaneBase implements IsPaneCompleteIn
     return $pane_form;
   }
 
+
   /**
    * Builds a form for a single event.
    *
@@ -390,13 +403,32 @@ class RegistrantInformation extends CheckoutPaneBase implements IsPaneCompleteIn
     $form['#type'] = 'fieldset';
     $form['#title'] = $registration->getEvent()->label();
 
+    $event = $registration->getEvent();
+    $event_meta = $this->eventManager->getMeta($event);
     $registrants = $this->getRegistrants($registration);
     if (count($registrants)) {
       // Show registrants in a table.
       $form['people'] = [
+        '#type' => 'details',
         '#weight' => 10,
+        '#open' => TRUE,
+        '#tree' => TRUE,
       ];
-      $form['people'] = $this->buildRegistrantTable($form['people'], $form_state, $registrants);
+      $event_type = $event_meta->getEventType();
+      $form['people']['registrants'] = [
+        '#type' => 'registrants',
+        '#event' => $event,
+        '#default_value' => $registrants,
+        '#allow_creation' => $event_meta->getCreatableIdentityTypes(),
+        '#allow_reference' => $event_meta->getIdentityTypes(),
+        '#registration' => $registration,
+        '#form_modes' => $event_type->getIdentityTypeEntityFormModes(),
+        '#tree' => TRUE,
+      ];
+      $form['registrants_before'] = [
+        '#type' => 'value',
+        '#value' => $registrants,
+      ];
     }
 
     $form['actions'] = [
@@ -409,6 +441,7 @@ class RegistrantInformation extends CheckoutPaneBase implements IsPaneCompleteIn
       ],
     ];
 
+    /**
     $form['actions']['add'] = [
       '#title' => $this->t('Add registrant'),
       '#type' => 'link',
@@ -439,7 +472,7 @@ class RegistrantInformation extends CheckoutPaneBase implements IsPaneCompleteIn
           ],
         ],
       ],
-    ];
+    ]; */
 
     return $form;
   }
@@ -462,14 +495,10 @@ class RegistrantInformation extends CheckoutPaneBase implements IsPaneCompleteIn
     $element += ['#parents' => []];
 
     $element['registrants'] = [
-      '#type' => 'table',
-      '#header' => [
-        t('Person'), t('Operations'),
-      ],
-      '#empty' => t('There are no people yet, add people below.'),
-      '#attributes' => [
-        'class' => ['registrants'],
-      ],
+      '#type' => 'registrants',
+      '#default_value' => $registrants,
+      '#tree' => TRUE,
+      '#registration'
     ];
 
     $count = 0;
@@ -482,76 +511,85 @@ class RegistrantInformation extends CheckoutPaneBase implements IsPaneCompleteIn
         ],
       ];
 
-      $row['registrant'] = [
-        '#type' => 'item',
-        '#title' => $this->t('Registrant @number', [
-          '@number' => $count,
-        ]),
-        '#markup' => $registrant->getIdentity()->label(),
-      ];
+      if ($registrant->getIdentity()) {
 
-      $row['actions'] = [
-        '#type' => 'container',
-        '#attributes' => [
-          'class' => ['actions'],
-        ],
-        'edit' => [
-          // Needs a name else the submission handlers think all buttons are the
-          // last button.
-          '#name' => 'ajax-submit-' . implode('-', $element['#parents']) . '-' . $i . '-edit',
-          '#title' => $this->t('Edit'),
-          '#type' => 'link',
-          '#url' => Url::fromRoute('commerce_rng.customer_registrant_form.edit', [
-            'commerce_order' => $this->order->id(),
-            'registration' => $registrant->getRegistration()->id(),
-            'registrant' => $registrant->id(),
-            'js' => 'nojs',
+        $row['registrant'] = [
+          '#type' => 'item',
+          '#title' => $this->t('Registrant @number', [
+            '@number' => $count,
           ]),
-          '#options' => [
-            'attributes' => [
-              'class' => [
-                'use-ajax',
-                'registrant-button',
-                'registrant-edit-button',
-              ],
-              'data-dialog-type' => 'modal',
-              'data-dialog-options' => Json::encode([
-                'width' => 1000,
-              ]),
-            ],
-            'query' => $this->destination->getAsArray(),
+          '#markup' => $registrant->label(),
+        ];
+
+        $row['actions'] = [
+          '#type' => 'container',
+          '#attributes' => [
+            'class' => ['actions'],
           ],
-          '#attached' => ['library' => ['core/drupal.dialog.ajax']],
-        ],
-        'remove' => [
-          // Needs a name else the submission handlers think all buttons are the
-          // last button.
-          '#name' => 'ajax-submit-' . implode('-', $element['#parents']) . '-' . $i . '-remove',
-          '#title' => $this->t('Remove'),
-          '#type' => 'link',
-          '#url' => Url::fromRoute('commerce_rng.customer_registrant_form.delete', [
-            'commerce_order' => $this->order->id(),
-            'registration' => $registrant->getRegistration()->id(),
-            'registrant' => $registrant->id(),
-            'js' => 'nojs',
-          ]),
-          '#options' => [
-            'attributes' => [
-              'class' => [
-                'use-ajax',
-                'registrant-button',
-                'registrant-remove-button',
+          'edit' => [
+            // Needs a name else the submission handlers think all buttons are the
+            // last button.
+            '#name' => 'ajax-submit-' . implode('-', $element['#parents']) . '-' . $i . '-edit',
+            '#title' => $this->t('Edit'),
+            '#type' => 'link',
+            '#url' => Url::fromRoute('commerce_rng.customer_registrant_form.edit', [
+              'commerce_order' => $this->order->id(),
+              'registration' => $registrant->getRegistration()->id(),
+              'registrant' => $registrant->id(),
+              'js' => 'nojs',
+            ]),
+            '#options' => [
+              'attributes' => [
+                'class' => [
+                  'use-ajax',
+                  'registrant-button',
+                  'registrant-edit-button',
+                ],
+                'data-dialog-type' => 'modal',
+                'data-dialog-options' => Json::encode([
+                  'width' => 1000,
+                ]),
               ],
-              'data-dialog-type' => 'modal',
-              'data-dialog-options' => Json::encode([
-                'width' => 1000,
-              ]),
+              'query' => $this->destination->getAsArray(),
             ],
-            'query' => $this->destination->getAsArray(),
+            '#attached' => ['library' => ['core/drupal.dialog.ajax']],
           ],
-          '#attached' => ['library' => ['core/drupal.dialog.ajax']],
-        ],
-      ];
+          'remove' => [
+            // Needs a name else the submission handlers think all buttons are the
+            // last button.
+            '#name' => 'ajax-submit-' . implode('-', $element['#parents']) . '-' . $i . '-remove',
+            '#title' => $this->t('Remove'),
+            '#type' => 'link',
+            '#url' => Url::fromRoute('commerce_rng.customer_registrant_form.delete', [
+              'commerce_order' => $this->order->id(),
+              'registration' => $registrant->getRegistration()->id(),
+              'registrant' => $registrant->id(),
+              'js' => 'nojs',
+            ]),
+            '#options' => [
+              'attributes' => [
+                'class' => [
+                  'use-ajax',
+                  'registrant-button',
+                  'registrant-remove-button',
+                ],
+                'data-dialog-type' => 'modal',
+                'data-dialog-options' => Json::encode([
+                  'width' => 1000,
+                ]),
+              ],
+              'query' => $this->destination->getAsArray(),
+            ],
+            '#attached' => ['library' => ['core/drupal.dialog.ajax']],
+          ],
+        ];
+      }
+      else {
+        $registrant_form = $this->entityFormBuilder->getForm($registrant, 'compact');
+
+
+        $row['registrant'] = $registrant_form;
+      }
 
       $element['registrants'][$i] = $row;
     }
@@ -593,6 +631,18 @@ class RegistrantInformation extends CheckoutPaneBase implements IsPaneCompleteIn
           '%title' => $order_item->getTitle(),
           '@maximum' => $maximum,
         ]));
+      }
+    }
+  }
+
+  /**
+   * @inheritDoc
+   */
+  public function submitPaneForm(array &$pane_form, FormStateInterface $form_state, array &$complete_form) {
+    // Need to save actual registrants on form.
+    foreach ($form_state->getValue($pane_form['#parents']) as $reg_id=>$registration) {
+      foreach ($registration['people']['registrants'] as $registrant) {
+        $registrant->save();
       }
     }
   }

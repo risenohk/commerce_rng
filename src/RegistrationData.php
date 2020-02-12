@@ -37,6 +37,12 @@ class RegistrationData implements RegistrationDataInterface {
   protected $registrantStorage;
 
   /**
+   * View Builder for registrant entities.
+   *
+   * @var \Drupal\Core\Entity\EntityViewBuilderInterface
+   */
+  protected $viewBuilder;
+  /**
    * Constructs a new RegistrationData object.
    *
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
@@ -47,6 +53,7 @@ class RegistrationData implements RegistrationDataInterface {
   public function __construct(EntityTypeManagerInterface $entity_type_manager, EventManagerInterface $event_manager) {
     $this->registrationStorage = $entity_type_manager->getStorage('registration');
     $this->registrantStorage = $entity_type_manager->getStorage('registrant');
+    $this->viewBuilder = $entity_type_manager->getViewBuilder('registrant');
     $this->eventManager = $event_manager;
   }
 
@@ -122,13 +129,19 @@ class RegistrationData implements RegistrationDataInterface {
       $order_item_id = $item->id();
       $registration = $this->getRegistrationByOrderItemId($order_item_id);
       if ($registration) {
+        /** @var \Drupal\rng\Entity\RegistrantInterface $registrant */
         foreach ($registration->getRegistrants() as $registrant) {
           $identity = $registrant->getIdentity();
           if ($identity) {
             $registrants_per_order_item[$order_item_id][$registrant->id()] = $identity->label();
           }
           else {
-            $registrants_per_order_item[$order_item_id][$registrant->id()] = $registrant->label();
+            $title = $this->viewBuilder->view($registrant, 'teaser');
+            $title = strip_tags((string)render($title));
+            if (empty(trim($title))) {
+              $title = $registrant->label();
+            }
+            $registrants_per_order_item[$order_item_id][$registrant->id()] = $title;
           }
         }
       }

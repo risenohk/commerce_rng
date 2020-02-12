@@ -27,9 +27,9 @@ function commerce_rng_commerce_order_item_presave(OrderItemInterface $order_item
 }
 
 /**
- * Implements hook_ENTITY_TYPE_insert() for entity type 'registrant'.
+ * Implements hook_ENTITY_TYPE_delete() for entity type 'registrant'.
  */
-function commerce_rng_registrant_insert(RegistrantInterface $registrant) {
+function commerce_rng_registrant_delete(RegistrantInterface $registrant) {
   $registration = $registrant->getRegistration();
   if (!$registration) {
     return;
@@ -42,22 +42,6 @@ function commerce_rng_registrant_insert(RegistrantInterface $registrant) {
 
   // Update the order item.
   $order_item->save();
-}
-
-/**
- * Implements hook_ENTITY_TYPE_update() for entity type 'registrant'.
- */
-function commerce_rng_registrant_update(RegistrantInterface $registrant) {
-  // Do the same as when inserting a registrant.
-  commerce_rng_registrant_insert($registrant);
-}
-
-/**
- * Implements hook_ENTITY_TYPE_delete() for entity type 'registrant'.
- */
-function commerce_rng_registrant_delete(RegistrantInterface $registrant) {
-  // Do the same as when inserting a registrant.
-  commerce_rng_registrant_insert($registrant);
 }
 
 /*******************************************************************************

@@ -76,4 +76,11 @@ class MultistepEvent extends CheckoutFlowWithPanesBase implements IsStepComplete
     return $form;
   }
 
+  public function processForm($element, FormStateInterface $formState, $form) {
+    return $element;
+  }
+
+  public function save(&$form, FormStateInterface $form_state) {
+    $registrants = $form_state->getValue($form['#parents']);
+  }
 }
