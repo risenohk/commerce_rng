@@ -31,7 +31,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *
  * @CommerceCheckoutPane(
  *   id = "registrant_information",
- *   label = @Translation("Registrant information"),
+ *   label = @Translation("Attendee information"),
  *   default_step = "event_registration",
  *   wrapper_element = "container",
  * )
@@ -194,11 +194,8 @@ class RegistrantInformation extends CheckoutPaneBase implements IsPaneCompleteIn
         return FALSE;
       }
 
-      /** @var \Drupal\rng\EventMetaInterface $meta */
-      $meta = $this->eventManager->getMeta($product);
-
       // Count registrants. Check if there are enough registrants.
-      if (count($registration->getRegistrantIds()) < $meta->getRegistrantsMinimum()) {
+      if (count($registration->getRegistrantIds()) < 1) {
         // There exists a registration with zero registrants. Information is not
         // complete.
         return FALSE;
@@ -340,8 +337,11 @@ class RegistrantInformation extends CheckoutPaneBase implements IsPaneCompleteIn
       if (!isset($list[$order_item_id])) {
         continue;
       }
+      /** @var \Drupal\rng\Entity\Registration|null $registration */
+      $registration = $this->registrationData->getRegistrationByOrderItemId($order_item_id);
       $list[$order_item_id]['#type'] = 'item';
-      $list[$order_item_id]['#title'] = $order_item->label();
+      $list[$order_item_id]['#title'] = $order_item->label(). ' - ' . $registration->getDateString();
+
       unset($list[$order_item_id]['registrants']['#title']);
     }
 
@@ -403,13 +403,21 @@ class RegistrantInformation extends CheckoutPaneBase implements IsPaneCompleteIn
     $form['#type'] = 'fieldset';
     $form['#title'] = $registration->getEvent()->label();
 
+    /* $eventDates = $registration->getDateString();
+    if (!empty($eventDates)) {
+      $form['date'] = [
+        '#type' => 'label',
+        '#title' => $eventDates,
+      ];
+    } */
+
     $event = $registration->getEvent();
     $event_meta = $this->eventManager->getMeta($event);
     $registrants = $this->getRegistrants($registration);
     if (count($registrants)) {
       // Show registrants in a table.
       $form['people'] = [
-        '#type' => 'details',
+        '#type' => 'div',
         '#weight' => 10,
         '#open' => TRUE,
         '#tree' => TRUE,
@@ -515,7 +523,7 @@ class RegistrantInformation extends CheckoutPaneBase implements IsPaneCompleteIn
 
         $row['registrant'] = [
           '#type' => 'item',
-          '#title' => $this->t('Registrant @number', [
+          '#title' => $this->t('Attendee @number', [
             '@number' => $count,
           ]),
           '#markup' => $registrant->label(),
@@ -615,18 +623,14 @@ class RegistrantInformation extends CheckoutPaneBase implements IsPaneCompleteIn
       $registration = $this->registrationData->getRegistrationByOrderItemId($order_item_id);
       /** @var \Drupal\rng\EventMetaInterface $meta */
       $meta = $this->eventManager->getMeta($product);
-      $minimum = $meta->getRegistrantsMinimum();
       $maximum = $meta->getRegistrantsMaximum();
 
-      if (!$registration || count($registration->getRegistrantIds()) < $minimum) {
+      if (!$registration) {
         // A certain event item does not contain a registration yet or has zero
         // registrants.
-        $form_state->setError($pane_form, $this->formatPlural($minimum, 'There are not enough registrants for %title. There must be at least 1 registrant.', 'There are not enough registrants for %title. There must be at least @minimum registrants.', [
-          '%title' => $order_item->getTitle(),
-          '@minimum' => $minimum,
-        ]));
+        $form_state->setError($pane_form, 'There are not enough registrants for %title. There must be at least 1 registrant.');
       }
-      elseif ($maximum > $minimum && count($registration->getRegistrantIds()) > $maximum) {
+      elseif ($maximum > 0 && count($registration->getRegistrantIds()) > $maximum) {
         $form_state->setError($pane_form, $this->formatPlural($maximum, 'There are too many registrants for %title. There must be at most 1 registrant.', 'There are too many registrants for %title. There must be at most @maximum registrants.', [
           '%title' => $order_item->getTitle(),
           '@maximum' => $maximum,

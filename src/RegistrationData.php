@@ -141,7 +141,7 @@ class RegistrationData implements RegistrationDataInterface {
             if (empty(trim($title))) {
               $title = $registrant->label();
             }
-            $registrants_per_order_item[$order_item_id][$registrant->id()] = $title;
+            $registrants_per_order_item[$order_item_id][$registrant->id()] = trim($title);
           }
         }
       }
