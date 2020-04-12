@@ -403,13 +403,13 @@ class RegistrantInformation extends CheckoutPaneBase implements IsPaneCompleteIn
     $form['#type'] = 'fieldset';
     $form['#title'] = $registration->getEvent()->label();
 
-    /* $eventDates = $registration->getDateString();
+    $eventDates = $registration->getDateString();
     if (!empty($eventDates)) {
       $form['date'] = [
         '#type' => 'label',
         '#title' => $eventDates,
       ];
-    } */
+    }
 
     $event = $registration->getEvent();
     $event_meta = $this->eventManager->getMeta($event);
