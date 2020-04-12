@@ -55,7 +55,7 @@ function commerce_rng_commerce_rng_persons_list_alter(array &$persons, OrderInte
   // If the list of persons are of entity type 'profile', remove inactive
   // persons from the list.
   foreach ($persons as $person_id => $person) {
-    if ($person instanceof ProfileInterface && !$person->isActive()) {
+    if ($person instanceof ProfileInterface && !$person->isPublished()) {
       unset($persons[$person_id]);
     }
   }
