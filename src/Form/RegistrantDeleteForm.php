@@ -2,10 +2,9 @@
 
 namespace Drupal\commerce_rng\Form;
 
-use Drupal\commerce_order\Entity\Order;
 use Drupal\Component\Datetime\TimeInterface;
 use Drupal\Core\Entity\ContentEntityDeleteForm;
-use Drupal\Core\Entity\EntityManagerInterface;
+use Drupal\Core\Entity\EntityRepositoryInterface;
 use Drupal\Core\Entity\EntityTypeBundleInfoInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Form\FormStateInterface;
@@ -39,7 +38,7 @@ class RegistrantDeleteForm extends ContentEntityDeleteForm implements AjaxFormIn
   /**
    * Constructs a new RegistrantDeleteForm.
    *
-   * @param \Drupal\Core\Entity\EntityManagerInterface $entity_manager
+   * @param \Drupal\Core\Entity\EntityRepositoryInterface $entity_repository
    *   The entity manager.
    * @param \Drupal\Core\Entity\EntityTypeBundleInfoInterface $entity_type_bundle_info
    *   The entity type bundle service.
@@ -51,13 +50,13 @@ class RegistrantDeleteForm extends ContentEntityDeleteForm implements AjaxFormIn
    *   The route matcher, used to retrieve parameters from the route.
    */
   public function __construct(
-    EntityManagerInterface $entity_manager,
+    EntityRepositoryInterface $entity_repository,
     EntityTypeBundleInfoInterface $entity_type_bundle_info,
     TimeInterface $time,
     ModuleHandlerInterface $module_handler,
     RouteMatchInterface $route_match
   ) {
-    parent::__construct($entity_manager, $entity_type_bundle_info, $time);
+    parent::__construct($entity_repository, $entity_type_bundle_info, $time);
 
     $this->setModuleHandler($module_handler);
     $this->order = $route_match->getParameter('commerce_order');
@@ -70,7 +69,7 @@ class RegistrantDeleteForm extends ContentEntityDeleteForm implements AjaxFormIn
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('entity.manager'),
+      $container->get('entity.repository'),
       $container->get('entity_type.bundle.info'),
       $container->get('datetime.time'),
       $container->get('module_handler'),
