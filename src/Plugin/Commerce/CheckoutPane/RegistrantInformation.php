@@ -449,7 +449,7 @@ class RegistrantInformation extends CheckoutPaneBase implements IsPaneCompleteIn
       ],
     ];
 
-    /**
+    /*
     $form['actions']['add'] = [
       '#title' => $this->t('Add registrant'),
       '#type' => 'link',

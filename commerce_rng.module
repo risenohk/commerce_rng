@@ -100,7 +100,7 @@ function commerce_rng_form_commerce_order_form_alter(array &$form, FormStateInte
         '#markup' => '<h4 class="label">' . $product_variation_title . '</h4>',
       ];
 
-      $create_link = Link::fromTextAndUrl('add registrant',
+      /*$create_link = Link::fromTextAndUrl('add registrant',
         Url::fromRoute('commerce_rng.registrant_form.add', [
           'commerce_order' => $order->id(),
           'registration' => $registrant['registration_id'],
@@ -109,7 +109,7 @@ function commerce_rng_form_commerce_order_form_alter(array &$form, FormStateInte
         '#markup' => $create_link,
         '#prefix' => '<div class="clearfix">',
         '#suffix' => '</div>',
-      ];
+      ];*/
     }
 
     $edit_link = Link::fromTextAndUrl('edit',

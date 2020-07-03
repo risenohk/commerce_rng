@@ -4,6 +4,7 @@ namespace Drupal\commerce_rng\Form;
 
 use Drupal\Component\Datetime\TimeInterface;
 use Drupal\Core\Entity\ContentEntityForm;
+use Drupal\Core\Entity\EntityFormBuilderInterface;
 use Drupal\Core\Entity\EntityRepositoryInterface;
 use Drupal\Core\Entity\EntityTypeBundleInfoInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
@@ -34,6 +35,12 @@ class RegistrantForm extends ContentEntityForm implements AjaxFormInterface, Reg
   protected $order;
 
   /**
+   * Entity Form Builder.
+   *
+   * @var \Drupal\Core\Entity\EntityFormBuilderInterface
+   */
+  protected $formBuilder;
+  /**
    * Helper class for generating registrant forms.
    *
    * @var \Drupal\commerce_rng\Form\RegistrantFormHelperInterface
@@ -53,6 +60,8 @@ class RegistrantForm extends ContentEntityForm implements AjaxFormInterface, Reg
    *   The module handler.
    * @param \Drupal\Core\Routing\RouteMatchInterface $route_match
    *   The route matcher, used to retrieve parameters from the route.
+   * @param EntityFormBuilderInterface $form_builder
+   *   The Entity Form Builder.
    * @param \Drupal\commerce_rng\Form\RegistrantFormHelperInterface $registrant_form_helper
    *   Helper class for generating registrant forms.
    */
@@ -62,6 +71,7 @@ class RegistrantForm extends ContentEntityForm implements AjaxFormInterface, Reg
     TimeInterface $time,
     ModuleHandlerInterface $module_handler,
     RouteMatchInterface $route_match,
+    EntityFormBuilderInterface $form_builder,
     RegistrantFormHelperInterface $registrant_form_helper
   ) {
     parent::__construct($entity_repository, $entity_type_bundle_info, $time);
@@ -69,7 +79,7 @@ class RegistrantForm extends ContentEntityForm implements AjaxFormInterface, Reg
     $this->setModuleHandler($module_handler);
     $this->routeMatch = $route_match;
     $this->registrantFormHelper = $registrant_form_helper;
-
+    $this->formBuilder = $form_builder;
     $this->initConstruct();
   }
 
@@ -78,11 +88,12 @@ class RegistrantForm extends ContentEntityForm implements AjaxFormInterface, Reg
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('entity.manager'),
+      $container->get('entity.repository'),
       $container->get('entity_type.bundle.info'),
       $container->get('datetime.time'),
       $container->get('module_handler'),
       $container->get('current_route_match'),
+      $container->get('entity.form_builder'),
       $container->get('commerce_rng.registrant_form')
     );
   }
@@ -127,7 +138,8 @@ class RegistrantForm extends ContentEntityForm implements AjaxFormInterface, Reg
       '#parents' => array_merge($form['#parents'], ['person']),
       '#weight' => -1,
     ];
-    $form['person'] = $this->registrantFormHelper->buildPersonFormByRegistrant($form['person'], $form_state, $this->entity);
+    //$form['person'] = $this->registrantFormHelper->buildPersonFormByRegistrant($form['person'], $form_state, $this->entity);
+    $form['person'] = $this->formBuilder->getForm($this->entity);
 
     // Submit button.
     $form['actions']['submit'] = $this->saveButton($form, $form_state);

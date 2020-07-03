@@ -36,7 +36,9 @@ class EventAvailabilityChecker implements AvailabilityCheckerInterface {
    */
   public function applies(PurchasableEntityInterface $entity) {
     // Check if the entity is an event.
-    return $this->eventManager->isEvent($entity->getProduct());
+    if (!empty($entity) && $product = $entity->getProduct()) {
+      return $this->eventManager->isEvent($product);
+    }
   }
 
   /**

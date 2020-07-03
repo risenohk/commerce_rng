@@ -242,7 +242,7 @@ class RegistrantAddForm extends FormBase implements AjaxFormInterface, Registran
       }
     }
 
-    $persons += $this->getOwnedPersons();
+    //$persons += $this->getOwnedPersons();
 
     // Allow other modules to alter the list of persons.
     $this->moduleHandler->alter('commerce_rng_persons_list', $persons, $this->order, $this->registration);

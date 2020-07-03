@@ -227,12 +227,7 @@ class RegistrationData implements RegistrationDataInterface {
         'registrant_company' => $billing_profile ? $billing_profile->getOrganization() : '',
       ];
 
-      // Get the registrants.
-      $registrant_ids = \Drupal::entityQuery('registrant')
-        ->condition('registration', $registration->id())
-        ->execute();
-
-      $registrants = $this->registrantStorage->loadMultiple($registrant_ids);
+      $registrants = $registration->getRegistrants();
 
       foreach ($registrants as $registrant) {
         $registrant_id = $registrant->id();
@@ -252,7 +247,7 @@ class RegistrationData implements RegistrationDataInterface {
           $data[$registrant_id] += [
             'registrant_identity_id' => 0,
             'registrant_identity_type' => '',
-            'registrant_label' => t('Unknown'),
+            'registrant_label' => $registrant->label(),
           ];
         }
       }
