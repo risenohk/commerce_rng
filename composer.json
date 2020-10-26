@@ -18,5 +18,6 @@
         "phpmetrics/phpmetrics": "^2.4",
         "drupal/token": "^1.5"
     },
-    "minimum-stability": "dev"
+    "minimum-stability": "dev",
+    "prefer-stable": true
 }
